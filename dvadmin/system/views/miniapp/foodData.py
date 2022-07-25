@@ -10,7 +10,6 @@ class foodDatabaseModelViewset(CustomModelViewSet):
     serializer_class = foodDatabaseModelserializers
     create_serializer_class = foodDatabaseModelCreateUpdateSerializer
     update_serializer_class = foodDatabaseModelCreateUpdateSerializer
-    filter_fields = ['foodType']
-    search_fields = ['foodType', 'foodName']
+
     # queryset = miniappUser.objects.all()
     # serializer_class = miniappUserModelserializers

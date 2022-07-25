@@ -44,24 +44,30 @@ class ApiLoggingMiddleware(MiddlewareMixin):
         except Exception:
             return
         user = get_request_user(request)
-        info = {
-            'request_ip': getattr(request, 'request_ip', 'unknown'),
-            'creator': user if not isinstance(user, AnonymousUser) else None,
-            'dept_belong_id': getattr(request.user, 'dept_id', None),
-            'request_method': request.method,
-            'request_path': request.request_path,
-            'request_body': body,
-            'response_code': response.data.get('code'),
-            'request_os': get_os(request),
-            'request_browser': get_browser(request),
-            'request_msg': request.session.get('request_msg'),
-            'status': True if response.data.get('code') in [2000, ] else False,
-            'json_result': {"code": response.data.get('code'), "msg": response.data.get('msg')},
-        }
-        operation_log, creat = OperationLog.objects.update_or_create(defaults=info, id=self.operation_log_id)
-        if not operation_log.request_modular and settings.API_MODEL_MAP.get(request.request_path, None):
-            operation_log.request_modular = settings.API_MODEL_MAP[request.request_path]
-            operation_log.save()
+        try:
+            if user.openid:
+                return
+        except Exception:
+
+            info = {
+                'request_ip': getattr(request, 'request_ip', 'unknown'),
+                'creator': user if not isinstance(user, AnonymousUser) else None,
+                'dept_belong_id': getattr(request.user, 'dept_id', None),
+                'request_method': request.method,
+                'request_path': request.request_path,
+                'request_body': body,
+                'response_code': response.data.get('code'),
+                'request_os': get_os(request),
+                'request_browser': get_browser(request),
+                'request_msg': request.session.get('request_msg'),
+                'status': True if response.data.get('code') in [2000, ] else False,
+                'json_result': {"code": response.data.get('code'), "msg": response.data.get('msg')},
+            }
+
+            operation_log, creat = OperationLog.objects.update_or_create(defaults=info, id=self.operation_log_id)
+            if not operation_log.request_modular and settings.API_MODEL_MAP.get(request.request_path, None):
+                operation_log.request_modular = settings.API_MODEL_MAP[request.request_path]
+                operation_log.save()
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if hasattr(view_func, 'cls') and hasattr(view_func.cls, 'queryset'):

@@ -107,6 +107,7 @@ DATABASES = {
     }
 }
 AUTH_USER_MODEL = "system.Users"
+AUTH_USER_MODEL2 = "miniapp.miniappUser"
 USERNAME_FIELD = "username"
 
 # Password validation
@@ -269,7 +270,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         # "rest_framework.permissions.IsAuthenticated",  # 只有经过身份认证确定用户身份才能访问
         # 'rest_framework.permissions.IsAdminUser', # is_staff=True才能访问 —— 管理员(员工)权限
-        'rest_framework.permissions.AllowAny', # 允许所有
+        'rest_framework.permissions.AllowAny',  # 允许所有
         # 'rest_framework.permissions.IsAuthenticatedOrReadOnly', # 有身份 或者 只读访问(self.list,self.retrieve)
     ],
     "EXCEPTION_HANDLER": "dvadmin.utils.exception.CustomExceptionHandler",  # 自定义的异常处理
@@ -290,10 +291,10 @@ SIMPLE_JWT = {
     # token刷新后的有效时间
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     # 设置前缀
-    "AUTH_HEADER_TYPES": ("JWT",),
+    "AUTH_HEADER_TYPES": ("JWT",),  # Authorization: JWT <token>
     "ROTATE_REFRESH_TOKENS": True,
 }
-
+# Authorization
 # ====================================#
 # ****************swagger************#
 # ====================================#
@@ -333,7 +334,7 @@ CAPTCHA_NOISE_FUNCTIONS = (
     "captcha.helpers.noise_arcs",  # 线
     # "captcha.helpers.noise_dots",  # 点
 )
-CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge' #字母验证码
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'  # 字母验证码
 # CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"  # 加减乘除验证码
 
 # ================================================= #
@@ -377,12 +378,14 @@ PLUGINS_URL_PATTERNS = []
 # ********** 一键导入插件配置开始 **********
 # 例如:
 # from dvadmin_upgrade_center.settings import *    # 升级中心
+from dvadmin_upgrade_center.settings import *
+
 # from dvadmin_celery.settings import *            # celery 异步任务
 # ...
 # ********** 一键导入插件配置结束 **********
 
 
 # 微信小程序信息
-AppId = "wx2fe5062b5d7336e5"  # 写你自己的小程序的id
-AppSecret = "f7dfd9fb3ba8f43ee7490e5bcc2f813f"  # 写你自己的小程序的秘钥
+AppId = "wxabdc52ee61f3560f"  # 写你自己的小程序的id
+AppSecret = "072720921ab6d0aa9c60617320f22570"  # 写你自己的小程序的秘钥
 code2Session = "https://api.weixin.qq.com/sns/jscode2session?appid={}&secret={}&js_code={}&grant_type=authorization_code"

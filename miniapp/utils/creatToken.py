@@ -2,7 +2,7 @@
 # @Time    : 2022/2/4 14:22
 # @Author  : kif
 # @FileName: createToken.py
-# @Software: PyCharm
+# # @Software: PyCharm
 
 import datetime
 
@@ -26,3 +26,5 @@ def creattoken(user_data):
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=24 * 60)  # 超时时间
     }
     return jwt.encode(payload=payload, key=SALT, algorithm="HS256", headers=headers)
+
+

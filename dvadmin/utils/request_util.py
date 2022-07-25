@@ -21,7 +21,16 @@ def get_request_user(request):
     :param request:
     :return:
     """
+    print(request)
     user: AbstractBaseUser = getattr(request, 'user', None)
+    print(user)
+    if AnonymousUser and isinstance(user, AnonymousUser):
+        return user
+    try:
+        if user.openid:
+            return user
+    except Exception as e:
+        pass
     if user and user.is_authenticated:
         return user
     try:

@@ -16,6 +16,8 @@ from dvadmin.system.views.admin.user import UserViewSet
 
 from dvadmin.system.views.miniapp.user import miniappUserModelViewset
 from dvadmin.system.views.miniapp.foodData import foodDatabaseModelViewset
+from dvadmin.system.views.miniapp.userAgreement import userAgreementModelViewset
+from dvadmin.system.views.miniapp.announcement import announcementbaseModelViewset
 
 system_url = routers.SimpleRouter()
 system_url.register(r'menu', MenuViewSet)
@@ -30,8 +32,10 @@ system_url.register(r'file', FileViewSet)
 system_url.register(r'api_white_list', ApiWhiteListViewSet)
 system_url.register(r'system_config', SystemConfigViewSet)
 
-system_url.register(r'miniappuser', miniappUserModelViewset)
+system_url.register(r'wxappuser', miniappUserModelViewset)
 system_url.register(r'foodData', foodDatabaseModelViewset)
+system_url.register(r'announcement', announcementbaseModelViewset)
+system_url.register(r'userAgreement', userAgreementModelViewset)
 
 urlpatterns = [
     path('user/export/', UserViewSet.as_view({'post': 'export_data', })),
