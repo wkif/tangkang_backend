@@ -12,8 +12,35 @@ STATUS_CHOICES = (
     (0, "禁用"),
     (1, "启用"),
 )
+bloodSugarType_CHOICES = (
+    (0, "空腹血糖"),
+    (1, "早餐后2小时血糖"),
+    (2, "午餐前血糖"),
+    (3, "午餐后2小时血糖"),
+    (4, "晚餐前血糖"),
+    (5, "晚餐后2小时血糖"),
+    (6, "睡前血糖"),
+    (7, "任意时间血糖"),
+    (8, "夜间2时血糖"),
+    (9, "其他"),
+)
+
+foodType_CHOICES = (
+    (0, "蔬菜"),
+    (1, "水果"),
+    (2, "肉类"),
+    (3, "蛋类"),
+    (4, "奶类"),
+    (5, "鱼类"),
+    (6, "豆类"),
+    (7, "谷物"),
+    (8, "其他"),
+)
 
 daName = 'miniapp_'
+
+
+# 用户信息区=====================================================================================================================
 
 
 class miniappUser(models.Model):
@@ -49,6 +76,8 @@ class miniappUser(models.Model):
     ID_number = models.CharField(u'身份证号', max_length=50, default='', null=True, blank=True)
     inviteCode = models.CharField(u'邀请码', max_length=50, default='', null=True, blank=True)
     numberofPersonsInvited = models.IntegerField(u'邀请人数', default=0)
+    speed = models.BooleanField(u'是否语音播报', default=False)
+    integral = models.IntegerField(u'积分', default=0)
 
     def set_password(self, raw_password):
         super().set_password(hashlib.md5(raw_password.encode(encoding="UTF-8")).hexdigest())
@@ -59,92 +88,30 @@ class miniappUser(models.Model):
         verbose_name_plural = verbose_name
 
 
-class bloodSugarLevels(models.Model):
+# 血糖目标表
+class bloodGlucoseTargetValue(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
-    bloodSugarLevel = models.FloatField(u'血糖', default=0)
-    bloodSugarTime = models.DateTimeField(u'血糖时间', null=True, blank=True)
-    bloodSugarType_CHOICES = (
-        (0, "空腹血糖"),
-        (1, "早餐后2小时血糖"),
-        (2, "午餐前血糖"),
-        (3, "午餐后2小时血糖"),
-        (4, "晚餐前血糖"),
-        (5, "晚餐后2小时血糖"),
-        (6, "睡前血糖"),
-        (7, "任意时间血糖"),
-        (8, "夜间2时血糖"),
-        (9, "其他"),
-    )
-    bloodSugarType = models.IntegerField(
-        choices=bloodSugarType_CHOICES, default=0, verbose_name="血糖类型", null=True, blank=True, help_text="血糖类型"
-    )
+    bloodSugar0_targetValue = models.FloatField(verbose_name="空腹血糖目标值")
+    bloodSugar1_targetValue = models.FloatField(verbose_name="早餐后2小时血糖目标值")
+    bloodSugar2_targetValue = models.FloatField(verbose_name="午餐前血糖目标值")
+    bloodSugar3_targetValue = models.FloatField(verbose_name="午餐后2小时血糖目标值")
+    bloodSugar4_targetValue = models.FloatField(verbose_name="晚餐前血糖目标值")
+    bloodSugar5_targetValue = models.FloatField(verbose_name="晚餐后2小时血糖目标值")
+    bloodSugar6_targetValue = models.FloatField(verbose_name="睡前血糖目标值")
+    bloodSugar7_targetValue = models.FloatField(verbose_name="任意时间血糖目标值")
+    bloodSugar8_targetValue = models.FloatField(verbose_name="夜间2时血糖目标值")
+    bloodSugar9_targetValue = models.FloatField(verbose_name="其他血糖目标值")
+    createDate = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    updateDate = models.DateTimeField(verbose_name="更新时间", auto_now=True)
 
     class Meta:
-        db_table = daName + "bloodSugarLevels"
-        verbose_name = "血糖日记录"
+        db_table = daName + "bloodGlucoseTargetValue"
+        verbose_name = "血糖目标值"
         verbose_name_plural = verbose_name
 
 
-class periodicalLogging(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
-    periodicalTime = models.DateTimeField(u'日期', null=True, blank=True)
-    glycosylatedHemoglobin = models.FloatField(u'糖化血红蛋白', default=0)
-    microalbuminuria = models.FloatField(u'微量白蛋白', default=0)
-    dorsalisPedisArtery = models.FloatField(u'足跟静脉搏动', default=0)
-
-    class Meta:
-        db_table = daName + "periodicalLogging"
-        verbose_name = "日常记录"
-        verbose_name_plural = verbose_name
-
-
-class foodDatabase(models.Model):
-    id = models.AutoField(primary_key=True)
-    foodName = models.CharField(u'食物名称', max_length=50, default='', null=True, blank=True)
-    foodType_CHOICES = (
-        (0, "蔬菜"),
-        (1, "水果"),
-        (2, "肉类"),
-        (3, "蛋类"),
-        (4, "奶类"),
-        (5, "鱼类"),
-        (6, "豆类"),
-        (7, "谷物"),
-        (8, "其他"),
-    )
-    foodType = models.IntegerField(
-        choices=foodType_CHOICES, default=0, verbose_name="食物类型", null=True, blank=True, help_text="食物类型"
-    )
-    foodCalory = models.FloatField(u'卡路里', default=0)
-    foodProtein = models.FloatField(u'蛋白质', default=0)
-    foodFat = models.FloatField(u'脂肪', default=0)
-    foodCarbohydrate = models.FloatField(u'碳水化合物', default=0)
-    foodVitaminA = models.FloatField(u'维生素A', default=0)
-    foodVitaminC = models.FloatField(u'维生素C', default=0)
-    foodVitaminE = models.FloatField(u'维生素E', default=0)
-    foodVitaminD = models.FloatField(u'维生素D', default=0)
-    heat = models.FloatField(u'热量', default=0)
-
-    class Meta:
-        db_table = daName + "foodDatabase"
-        verbose_name = "食物库"
-        verbose_name_plural = verbose_name
-
-
-class userAgreement(models.Model):
-    id = models.AutoField(primary_key=True)
-    content = models.TextField(u'内容', default='', null=True, blank=True)
-    createTime = models.DateTimeField(u'创建时间', auto_now_add=True)
-    updateTime = models.DateTimeField(u'更新时间', auto_now=True)
-
-    class Meta:
-        db_table = daName + "userAgreement"
-        verbose_name = "用户协议"
-        verbose_name_plural = verbose_name
-
-
+# 用户地址表
 class address(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
@@ -161,11 +128,146 @@ class address(models.Model):
         verbose_name_plural = verbose_name
 
 
+# 用户信息区=====================================================================================================================
+
+# 血糖记录表
+class bloodSugarLevels(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    bloodSugarLevel = models.FloatField(u'血糖', default=0)
+    bloodSugarTime = models.DateTimeField(u'血糖时间', null=True, blank=True)
+    bloodSugarType = models.IntegerField(
+        choices=bloodSugarType_CHOICES, default=0, verbose_name="血糖类型", null=True, blank=True, help_text="血糖类型"
+    )
+    STATUS_CHOICES = (
+        (0, "不达标"),
+        (1, "达标"),
+    )
+    status = models.IntegerField(u'状态', choices=STATUS_CHOICES, default=0, help_text="状态")
+
+    class Meta:
+        db_table = daName + "bloodSugarLevels"
+        verbose_name = "血糖日记录"
+        verbose_name_plural = verbose_name
+
+
+# 不定期记录表
+class periodicalLogging(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    periodicalTime = models.DateTimeField(u'日期', null=True, blank=True)
+    glycosylatedHemoglobin = models.FloatField(u'糖化血红蛋白', default=0)
+    microalbuminuria = models.FloatField(u'微量白蛋白', default=0)
+    dorsalisPedisArtery = models.CharField(u'足跟静脉搏动', max_length=50, default='', null=True, blank=True)
+
+    class Meta:
+        db_table = daName + "periodicalLogging"
+        verbose_name = "日常记录"
+        verbose_name_plural = verbose_name
+
+
+# **行为记录**
+
+# 食品参数表
+class foodDatabase(models.Model):
+    id = models.AutoField(primary_key=True)
+    img = models.CharField(u'图片', max_length=250,
+                           default='https://kifimg.oss-cn-beijing.aliyuncs.com/project/202205151948902.png', null=True,
+                           blank=True)
+    foodName = models.CharField(u'食物名称', max_length=50, default='', null=True, blank=True)
+    foodType = models.IntegerField(
+        choices=foodType_CHOICES, default=0, verbose_name="食物类型", null=True, blank=True, help_text="食物类型"
+    )
+    unit = models.CharField(u'单位', max_length=50, default='', null=True, blank=True)
+    foodCalory = models.FloatField(u'卡路里', default=0)
+    foodProtein = models.FloatField(u'蛋白质', default=0)
+    foodFat = models.FloatField(u'脂肪', default=0)
+    foodCarbohydrate = models.FloatField(u'碳水化合物', default=0)
+    foodVitaminA = models.FloatField(u'维生素A', default=0)
+    foodVitaminC = models.FloatField(u'维生素C', default=0)
+    foodVitaminE = models.FloatField(u'维生素E', default=0)
+    foodVitaminD = models.FloatField(u'维生素D', default=0)
+    heat = models.FloatField(u'热量', default=0)
+
+    class Meta:
+        db_table = daName + "foodDatabase"
+        verbose_name = "食物库"
+        verbose_name_plural = verbose_name
+
+
+# 饮食记录表
+class dietRecords(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    time = models.DateTimeField(u'日期', null=True, blank=True)
+    food = models.JSONField(u'食物', default='', null=True, blank=True)
+    foodCalory = models.FloatField(u'卡路里', default=0)
+    foodProtein = models.FloatField(u'蛋白质', default=0)
+    foodFat = models.FloatField(u'脂肪', default=0)
+    foodCarbohydrate = models.FloatField(u'碳水化合物', default=0)
+    foodVitaminA = models.FloatField(u'维生素A', default=0)
+    foodVitaminC = models.FloatField(u'维生素C', default=0)
+    foodVitaminE = models.FloatField(u'维生素E', default=0)
+    foodVitaminD = models.FloatField(u'维生素D', default=0)
+    heat = models.FloatField(u'热量', default=0)
+
+    class Meta:
+        db_table = daName + "dietRecords"
+        verbose_name = "饮食记录"
+        verbose_name_plural = verbose_name
+
+
+# 系统区============================================================系统区
+# 公告表
 class announcement(models.Model):
     id = models.AutoField(primary_key=True)
     createUser = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="announcement_createUser")
-    release=models.BooleanField(u'是否发布', default=False)
+    release = models.BooleanField(u'是否发布', default=False)
     title = models.CharField(u'标题', max_length=50, default='', null=True, blank=True)
     content = models.TextField(u'内容', default='', null=True, blank=True)
     createTime = models.DateTimeField(u'创建时间', auto_now_add=True)
     updateTime = models.DateTimeField(u'更新时间', auto_now=True)
+
+    class Meta:
+        db_table = daName + "announcement"
+        verbose_name = "公告"
+        verbose_name_plural = verbose_name
+
+
+# 用户协议表
+class userAgreement(models.Model):
+    id = models.AutoField(primary_key=True)
+    content = models.TextField(u'内容', default='', null=True, blank=True)
+    createTime = models.DateTimeField(u'创建时间', auto_now_add=True)
+    updateTime = models.DateTimeField(u'更新时间', auto_now=True)
+
+    class Meta:
+        db_table = daName + "userAgreement"
+        verbose_name = "用户协议"
+        verbose_name_plural = verbose_name
+
+
+# 积分明细表
+class IntegralDetail(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(u'名称', max_length=50, default='', null=True, blank=True)
+    integral = models.IntegerField(u'积分', default=0)
+    createTime = models.DateTimeField(u'创建时间', auto_now_add=True)
+    updateTime = models.DateTimeField(u'更新时间', auto_now=True)
+
+    class Meta:
+        db_table = daName + "IntegralDetail"
+        verbose_name = "积分分类明细"
+        verbose_name_plural = verbose_name
+
+
+class integralHistory(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    integralType = models.ForeignKey(IntegralDetail, on_delete=models.CASCADE)
+    time = models.DateTimeField(u'时间', auto_now_add=True)
+
+    class Meta:
+        db_table = daName + "integralHistory"
+        verbose_name = "积分记录明细"
+        verbose_name_plural = verbose_name

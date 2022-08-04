@@ -22,6 +22,9 @@ urlpatterns = [
     # 基础功能
     path('login/', loginApi.as_view()),
     path('getUserAgreement/', getUserAgreement.as_view()),
+    # 语音开关
+    path('changespeed/', changespeed.as_view()),
+    path('getspeed/', getSpeed.as_view()),
     # 收货地址
     path('getAddressByUsrid/', getAddressByUsrid.as_view()),
     path('addAddressByUserid/', addAddressByUserid.as_view()),
@@ -44,7 +47,18 @@ urlpatterns = [
     path('getperiodicalLoggingDataByUserId/', getperiodicalLoggingDataByUserId.as_view()),
     path('addPeriodicalLoggingData/', addPeriodicalLoggingData.as_view()),
     path('deletePeriodicalLoggingData/', deletePeriodicalLoggingData.as_view()),
-#     食物数据库
+    #     食物数据库
     path('getfoodDatabase/', getfoodDatabase.as_view()),
+    path('getfoodDatabaseByname/', getfoodDatabaseByname.as_view()),
+
+    path('getDietRecords/', getDietRecords.as_view()),
+    path('addDietRecords/', addDietRecords.as_view()),
+    path('deleteDietRecords/', deleteDietRecords.as_view()),
+    #     血糖目标
+    path('addBloodGlucoseTargetValue/', addBloodGlucoseTargetValue.as_view()),
+    path('getBloodGlucoseTargetValue/', getBloodGlucoseTargetValue.as_view()),
+    # 积分记录
+    path('getIntegralHistory/', getIntegralHistory.as_view()),
+    path('getUserIntegral/', getUserIntegral.as_view()),
 
 ]

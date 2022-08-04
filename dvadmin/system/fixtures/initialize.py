@@ -14,6 +14,7 @@ from dvadmin.system.views.admin.api_white_list import ApiWhiteListInitSerializer
 from dvadmin.system.views.admin.dept import DeptInitSerializer
 from dvadmin.system.views.admin.dictionary import DictionaryInitSerializer
 from dvadmin.system.views.admin.system_config import SystemConfigInitSerializer
+from miniapp.serializers import integralDetailModelserializers
 
 
 class Initialize(CoreInitialize):
@@ -60,6 +61,12 @@ class Initialize(CoreInitialize):
         """
         self.init_base(SystemConfigInitSerializer, unique_fields=['key', 'parent', ])
 
+    def init_integral(self):
+        """
+        初始化积分表
+        """
+        self.init_base(integralDetailModelserializers, unique_fields=['name', 'integral',])
+
     def run(self):
         self.init_dept()
         self.init_role()
@@ -68,6 +75,7 @@ class Initialize(CoreInitialize):
         self.init_api_white_list()
         self.init_dictionary()
         self.init_system_config()
+        self.init_integral()
 
 
 if __name__ == "__main__":

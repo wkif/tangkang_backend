@@ -1,3 +1,5 @@
+import datetime
+import json
 from random import choice
 from string import ascii_uppercase as uc, digits as dg
 import time
@@ -16,24 +18,25 @@ from dvadmin.utils.permission import CustomPermission
 from miniapp.extensions.auth import JwtQueryParamsAuthentication
 from miniapp.models import *
 from miniapp.serializers import userserializer, addressSerializer, JfwTokenObtainPairSerializer, bloodSugarSerializer, \
-    periodicalLoggingSerializer, announcementbaseserializer, foodDatabaseSerializer
+    periodicalLoggingSerializer, announcementbaseserializer, foodDatabaseSerializer, dietRecordsSerializer, \
+    integralHistorySerializer
 from miniapp.utils.checkIdnum import check_id_data
 from miniapp.utils.creatToken import creattoken
 from miniapp.utils.wxlogin import get_login_info
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
+def addIntegralHistory(user, integralType):
+    integralHistory.objects.create(user=user, integralType=integralType)
+
+
 class loginApi(APIView):
     def post(self, request):
         res = {}
-        # print(request)
-        # 微信登录
         code = request.data.get('code')
-        # print(code)
         user_data = get_login_info(code)
         info = request.data.get('info')
         inviteCode = request.data.get('inviteCode')
-
         if user_data:
             u = miniappUser.objects.filter(openid=user_data['openid']).first()
             if not u:
@@ -53,11 +56,8 @@ class loginApi(APIView):
                 re = userserializer(a)
                 res['data'] = re.data
                 res['status'] = 200
-                # token = creattoken(user_data)
                 token = JfwTokenObtainPairSerializer.get_token(a).access_token
-                # print((token))
                 res['token'] = str(token)
-                # print(res)
                 return JsonResponse(res)
             else:
                 if u.is_active:
@@ -76,6 +76,63 @@ class loginApi(APIView):
                     return JsonResponse(res)
         else:
             return JsonResponse({'status': 400, 'message': "未获取到openid，联系开发人员"})
+
+
+class getUserIntegral(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = user.integral
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class changespeed(APIView):
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            if user.speed:
+                user.speed = False
+            else:
+                user.speed = True
+            user.save()
+            res['data'] = '修改成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getSpeed(APIView):
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            if user.speed:
+                res['data'] = 1
+                res['status'] = 200
+                return JsonResponse(res)
+            else:
+                res['data'] = 0
+                res['status'] = 200
+                return JsonResponse(res)
 
 
 class getUserAgreement(APIView):
@@ -276,7 +333,7 @@ class editUserInfo(APIView):
         waistline = request.data.get('waistline')
         mobile = request.data.get('mobile')
 
-        if not gender or not height or not weight or not birthday or not bloodType or not waistline:
+        if not height or not weight or not birthday or not bloodType or not waistline:
             res['data'] = '请填写完整信息'
             res['status'] = 400
             return JsonResponse(res)
@@ -355,14 +412,59 @@ class getBloodSugarDataByUserId(APIView):
             res['data'] = '用户不存在'
             res['status'] = 400
             return JsonResponse(res)
-        bloodSugarData = bloodSugarLevels.objects.filter(user=user).all().order_by('bloodSugarTime')
-        if not bloodSugarData:
+        dateType = request.data.get('dateType')
+        print(dateType)
+
+        data = {}
+        days = 0
+        if dateType == '0' or dateType == 0:
+            days = 7
+        elif dateType == '1' or dateType == 1:
+            days = 30
+
+        date = datetime.datetime.now().date()
+        date_r = date - datetime.timedelta(days=days)
+
+        bloodSugarData = bloodSugarLevels.objects.filter(user=user, bloodSugarTime__range=(
+            date_r, datetime.datetime.now().date() + datetime.timedelta(days=1))).order_by(
+            '-bloodSugarTime')
+        series = [
+            {
+                'name': '',
+                'data': [None for x in range(days)]
+            }
+            for i in range(10)
+        ]
+        xAxisData = []
+        for i in bloodSugarData:
+            for d in range(days):
+                # if i.bloodSugarTime.strftime('%m-%d') not in xAxisData:
+                #     xAxisData.append(i.bloodSugarTime.strftime('%m-%d'))
+                ds = date - datetime.timedelta(days=d)
+                if ds not in xAxisData:
+                    xAxisData.append(ds)
+                if i.bloodSugarTime.date() == ds:
+                    series[i.bloodSugarType]['data'][d] = i.bloodSugarLevel
+                    # break
+
+        legendData = ['空腹血糖', '早餐后2小时血糖', '午餐前血糖', '午餐后2小时血糖', '晚餐前血糖', '晚餐后2小时血糖', '睡前血糖', '任意时间血糖', '夜间2时血糖', '其他']
+        for i in range(len(legendData)):
+            series[i]['name'] = legendData[i]
+        data['series'] = series
+        data['xAxisData'] = xAxisData
+        data['legendData'] = legendData
+
+        if not data:
             res['data'] = '暂无数据'
             res['status'] = 400
             return JsonResponse(res)
-        res['data'] = bloodSugarSerializer(bloodSugarData, many=True).data
-        res['status'] = 200
-        return JsonResponse(res)
+        else:
+            res['data'] = {
+                'chartsData': data,
+                'cardData': bloodSugarSerializer(bloodSugarData, many=True).data
+            }
+            res['status'] = 200
+            return JsonResponse(res)
 
 
 class getLastBloodSugarDataByUserId(APIView):
@@ -400,15 +502,38 @@ class addBloodSugarData(APIView):
         bloodSugarLevel = request.data.get('bloodSugarLevel')
         bloodSugarTime = request.data.get('bloodSugarTime')
         bloodSugarType = request.data.get('bloodSugarType')
-        if not bloodSugarLevel or not bloodSugarTime or not bloodSugarType:
+        if not bloodSugarLevel or not bloodSugarTime:
             res['data'] = '请填写完整信息'
             res['status'] = 400
             return JsonResponse(res)
-        bloodSugarLevels.objects.create(user=user, bloodSugarLevel=bloodSugarLevel, bloodSugarTime=bloodSugarTime,
-                                        bloodSugarType=bloodSugarType)
-        res['data'] = '添加成功'
-        res['status'] = 200
-        return JsonResponse(res)
+        today = bloodSugarTime.split(' ')[0]
+        nextday = (datetime.datetime.strptime(today, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        hasHis = bloodSugarLevels.objects.filter(user=user, bloodSugarTime__range=(today, nextday),
+                                                 bloodSugarType=bloodSugarType).first()
+        if hasHis:
+            res['data'] = '该日期已存在数据'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            targetValueData = bloodGlucoseTargetValue.objects.filter(user=user).first()
+            if not targetValueData:
+                status = 1
+            else:
+                key = 'bloodSugar' + str(bloodSugarType) + '_targetValue'
+                targetVlaue = targetValueData.__dict__[key]
+                if int(float(bloodSugarLevel)) > int(targetVlaue):
+                    status = 0
+                else:
+                    status = 1
+                    tarObj = IntegralDetail.objects.filter(id=2).first()
+                    user.integral += tarObj.integral
+                    user.save()
+                    addIntegralHistory(user, tarObj)
+            bloodSugarLevels.objects.create(user=user, bloodSugarLevel=bloodSugarLevel, bloodSugarTime=bloodSugarTime,
+                                            bloodSugarType=bloodSugarType, status=status)
+            res['data'] = '添加成功'
+            res['status'] = 200
+            return JsonResponse(res)
 
 
 class deleteBloodSugarData(APIView):
@@ -546,6 +671,74 @@ class getTopNoticeData(APIView):
 
 
 # 食品数据库--------------------------------------------------------start
+
+class getfoodDatabaseByname(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        foodName = request.data.get('foodName')
+        foodData = foodDatabase.objects.filter(foodName__contains=foodName).all()
+        print(foodData)
+        if not foodData:
+            res['data'] = '暂无数据'
+            res['status'] = 400
+            return JsonResponse(res)
+        data = [
+            {
+                'name': '全部',
+                'food': foodDatabaseSerializer(foodData, many=True).data
+            },
+            {
+                "name": "蔬菜",
+                "food": []
+            },
+            {
+                "name": "水果",
+                "food": []
+            },
+            {
+                "name": "肉类",
+
+                "food": []
+            },
+            {
+                "name": "蛋类",
+                "food": []
+            },
+            {
+                "name": "奶类",
+                "food": []
+            },
+            {
+                "name": "鱼类",
+                "food": []
+            },
+            {
+                "name": "豆类",
+                "food": []
+            },
+            {
+                "name": "谷物",
+                "food": []
+            },
+            {
+                "name": "其他",
+                "food": []
+            }
+
+        ]
+        for item in foodData:
+            data[item.foodType + 1]['food'].append(foodDatabaseSerializer(item).data)
+
+        res['data'] = {
+            'foodDatabase': data
+            , 'tablist': ['全部', '蔬菜', '水果', '肉类', '蛋类', '奶类', '鱼类', '豆类', '谷物', '其他']
+        }
+        res['status'] = 200
+        return JsonResponse(res)
+
+
 class getfoodDatabase(APIView):
     authentication_classes = (authentication.JWTAuthentication,)
 
@@ -558,5 +751,209 @@ class getfoodDatabase(APIView):
             return JsonResponse(res)
         res['data'] = foodDatabaseSerializer(foodDatabaseData, many=True).data
         res['status'] = 200
+
         return JsonResponse(res)
+
+
+class getDietRecords(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        dietRecordsList = dietRecords.objects.filter(user=user).all().order_by('-time')
+        if not dietRecordsList:
+            res['data'] = '暂无数据'
+            res['status'] = 400
+            return JsonResponse(res)
+        res['data'] = dietRecordsSerializer(dietRecordsList, many=True).data
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class addDietRecords(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        time = request.data.get('time')
+        food = request.data.get('food')
+        foodCalory = request.data.get('foodCalory')
+        foodProtein = request.data.get('foodProtein')
+        foodFat = request.data.get('foodFat')
+        foodCarbohydrate = request.data.get('foodCarbohydrate')
+        foodVitaminA = request.data.get('foodVitaminA')
+        foodVitaminC = request.data.get('foodVitaminC')
+        foodVitaminE = request.data.get('foodVitaminE')
+        foodVitaminD = request.data.get('foodVitaminD')
+        heat = request.data.get('heat')
+
+        di = dietRecords.objects.filter(user=user, time=time, food=food).first()
+        if di:
+            res['data'] = '该数据已经存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        dietRecords.objects.create(user=user, time=time, food=food, foodCalory=foodCalory, foodProtein=foodProtein,
+                                   foodFat=foodFat, foodCarbohydrate=foodCarbohydrate, foodVitaminA=foodVitaminA,
+                                   foodVitaminC=foodVitaminC, foodVitaminE=foodVitaminE, foodVitaminD=foodVitaminD,
+                                   heat=heat)
+        res['data'] = '添加成功'
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class deleteDietRecords(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        dietId = request.data.get('dietId')
+        diet = dietRecords.objects.filter(id=dietId).first()
+        if not diet:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            diet.delete()
+            res['data'] = '删除成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
 # 食品数据库--------------------------------------------------------end
+
+
+# 血糖目标--------------------------------------------------------start
+
+class addBloodGlucoseTargetValue(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+
+        bloodSugar0_targetValue = request.data.get('bloodSugar0_targetValue')
+        bloodSugar1_targetValue = request.data.get('bloodSugar1_targetValue')
+        bloodSugar2_targetValue = request.data.get('bloodSugar2_targetValue')
+        bloodSugar3_targetValue = request.data.get('bloodSugar3_targetValue')
+        bloodSugar4_targetValue = request.data.get('bloodSugar4_targetValue')
+        bloodSugar5_targetValue = request.data.get('bloodSugar5_targetValue')
+        bloodSugar6_targetValue = request.data.get('bloodSugar6_targetValue')
+        bloodSugar7_targetValue = request.data.get('bloodSugar7_targetValue')
+        bloodSugar8_targetValue = request.data.get('bloodSugar8_targetValue')
+        bloodSugar9_targetValue = request.data.get('bloodSugar9_targetValue')
+        if not bloodSugar0_targetValue and not bloodSugar1_targetValue and not bloodSugar2_targetValue and not bloodSugar3_targetValue and not bloodSugar4_targetValue and not bloodSugar5_targetValue and not bloodSugar6_targetValue and not bloodSugar7_targetValue and not bloodSugar8_targetValue and not bloodSugar9_targetValue:
+            res['data'] = '请输入目标值'
+            res['status'] = 400
+            return JsonResponse(res)
+        targetValue = bloodGlucoseTargetValue.objects.filter(user=user).first()
+        if targetValue:
+            targetValue.bloodSugar0_targetValue = bloodSugar0_targetValue
+            targetValue.bloodSugar1_targetValue = bloodSugar1_targetValue
+            targetValue.bloodSugar2_targetValue = bloodSugar2_targetValue
+            targetValue.bloodSugar3_targetValue = bloodSugar3_targetValue
+            targetValue.bloodSugar4_targetValue = bloodSugar4_targetValue
+            targetValue.bloodSugar5_targetValue = bloodSugar5_targetValue
+            targetValue.bloodSugar6_targetValue = bloodSugar6_targetValue
+            targetValue.bloodSugar7_targetValue = bloodSugar7_targetValue
+            targetValue.bloodSugar8_targetValue = bloodSugar8_targetValue
+            targetValue.bloodSugar9_targetValue = bloodSugar9_targetValue
+            targetValue.save()
+            res['data'] = '更新成功'
+            res['status'] = 200
+            return JsonResponse(res)
+        else:
+            bloodGlucoseTargetValue.objects.create(user=user, bloodSugar0_targetValue=bloodSugar0_targetValue,
+                                                   bloodSugar1_targetValue=bloodSugar1_targetValue,
+                                                   bloodSugar2_targetValue=bloodSugar2_targetValue,
+                                                   bloodSugar3_targetValue=bloodSugar3_targetValue,
+                                                   bloodSugar4_targetValue=bloodSugar4_targetValue,
+                                                   bloodSugar5_targetValue=bloodSugar5_targetValue,
+                                                   bloodSugar6_targetValue=bloodSugar6_targetValue,
+                                                   bloodSugar7_targetValue=bloodSugar7_targetValue,
+                                                   bloodSugar8_targetValue=bloodSugar8_targetValue,
+                                                   bloodSugar9_targetValue=bloodSugar9_targetValue)
+            res['data'] = '添加成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getBloodGlucoseTargetValue(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        targetValue = bloodGlucoseTargetValue.objects.filter(user=user).first()
+        if not targetValue:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = {
+                'targetValue': {
+                    'bloodSugar0_targetValue': targetValue.bloodSugar0_targetValue,
+                    'bloodSugar1_targetValue': targetValue.bloodSugar1_targetValue,
+                    'bloodSugar2_targetValue': targetValue.bloodSugar2_targetValue,
+                    'bloodSugar3_targetValue': targetValue.bloodSugar3_targetValue,
+                    'bloodSugar4_targetValue': targetValue.bloodSugar4_targetValue,
+                    'bloodSugar5_targetValue': targetValue.bloodSugar5_targetValue,
+                    'bloodSugar6_targetValue': targetValue.bloodSugar6_targetValue,
+                    'bloodSugar7_targetValue': targetValue.bloodSugar7_targetValue,
+                    'bloodSugar8_targetValue': targetValue.bloodSugar8_targetValue,
+                    'bloodSugar9_targetValue': targetValue.bloodSugar9_targetValue,
+                },
+                'createTime': targetValue.createDate.strftime('%Y-%m-%d %H:%M:%S'),
+                'updateTime': targetValue.updateDate.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getIntegralHistory(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        integralHistoryData = integralHistory.objects.filter(user=user).order_by('-time')
+        if not integralHistoryData:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = res['data'] = integralHistorySerializer(integralHistoryData, many=True).data
+            res['status'] = 200
+            return JsonResponse(res)

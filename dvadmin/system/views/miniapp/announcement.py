@@ -10,4 +10,3 @@ class announcementbaseModelViewset(CustomModelViewSet):
     serializer_class = announcementbaseModelserializers
     create_serializer_class = announcementbaseModelCreateUpdateSerializer
     update_serializer_class = announcementbaseModelCreateUpdateSerializer
-

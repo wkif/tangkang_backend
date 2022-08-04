@@ -32,6 +32,7 @@ class CoreInitialize:
         model = Serializer.Meta.model
         path_file = os.path.join(apps.get_app_config(self.app.split('.')[-1]).path, 'fixtures',
                                  f'init_{Serializer.Meta.model._meta.model_name}.json')
+        print(path_file)
         if not os.path.isfile(path_file):
             return
         with open(path_file,encoding="utf-8") as f:

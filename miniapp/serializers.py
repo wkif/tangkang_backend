@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
@@ -8,6 +9,8 @@ from dvadmin.utils.serializers import CustomModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from miniapp.models import *
 
+
+# 后台管理端======================================================start
 
 class JfwTokenObtainPairSerializer(TokenObtainPairSerializer):
 
@@ -51,8 +54,6 @@ class userserializer(serializers.ModelSerializer):
         exclude = ["password", "is_active", 'openid']
         # fields = '__all__'
 
-
-#
 
 class foodDatabaseModelserializers(CustomModelSerializer):
     class Meta:
@@ -140,9 +141,47 @@ class foodDatabaseModelCreateUpdateSerializer(CustomModelSerializer):
 
 
 class foodDatabaseSerializer(serializers.ModelSerializer):
+    foodType = serializers.SerializerMethodField()
+
+    def get_foodType(self, obj):
+        # print(obj.foodType)
+        list = ['蔬菜', '水果', '肉类', '蛋类', '奶类', '鱼类', '豆类', '谷物', '其他']
+        return list[obj.foodType]
+
     class Meta:
         model = foodDatabase
         fields = '__all__'
+
+
+# 积分
+
+class integralDetailModelserializers(CustomModelSerializer):
+    class Meta:
+        model = IntegralDetail
+        fields = '__all__'
+
+
+class integralDetailModelCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = IntegralDetail
+        fields = '__all__'
+
+
+class integralDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IntegralDetail
+        fields = '__all__'
+
+
+# 后台管理端======================================================end
+
+
+# 小程序端======================================================start
+# 小程序端======================================================end
 
 
 # 地址
@@ -152,13 +191,46 @@ class addressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# 血糖记录
 class bloodSugarSerializer(serializers.ModelSerializer):
     class Meta:
         model = bloodSugarLevels
         fields = '__all__'
 
 
+# 不定期记录
+
 class periodicalLoggingSerializer(serializers.ModelSerializer):
     class Meta:
         model = periodicalLogging
+        fields = '__all__'
+
+
+# 饮食记录
+class dietRecordsSerializer(serializers.ModelSerializer):
+    # food = serializers.SerializerMethodField()
+    #
+    # def get_food(self, obj):
+    #     # food = json.loads(obj.food)
+    #     for item in obj.food:
+    #         list = ['蔬菜', '水果', '肉类', '蛋类', '奶类', '鱼类', '豆类', '谷物', '其他']
+    #         item['food']['foodType'] = list[int(item['food']['foodType'])]
+    #     return obj.food
+
+    class Meta:
+        model = dietRecords
+        fields = '__all__'
+
+
+class integralHistorySerializer(serializers.ModelSerializer):
+    integralType = serializers.SerializerMethodField()
+
+    def get_integralType(self, obj):
+        return {
+            'type':integralDetailSerializer(obj.integralType).data['name'],
+            'integral':integralDetailSerializer(obj.integralType).data['integral']
+        }
+
+    class Meta:
+        model = integralHistory
         fields = '__all__'
