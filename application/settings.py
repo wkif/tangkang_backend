@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     "dvadmin.system",
     "drf_yasg",
     "captcha",
-    'miniapp'
+    'miniapp',
+    'shop'
 ]
 
 MIDDLEWARE = [
@@ -287,7 +288,7 @@ from datetime import timedelta
 
 SIMPLE_JWT = {
     # token有效时长
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60*12),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60 * 12),
     # token刷新后的有效时间
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     # 设置前缀
@@ -378,7 +379,7 @@ PLUGINS_URL_PATTERNS = []
 # ********** 一键导入插件配置开始 **********
 # 例如:
 # from dvadmin_upgrade_center.settings import *    # 升级中心
-from dvadmin_upgrade_center.settings import *
+# from dvadmin_upgrade_center.settings import *
 
 # from dvadmin_celery.settings import *            # celery 异步任务
 # ...

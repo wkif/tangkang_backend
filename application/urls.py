@@ -94,5 +94,6 @@ urlpatterns = (
         + static(settings.STATIC_URL, document_root=settings.STATIC_URL)
         + [re_path(ele.get('re_path'), include(ele.get('include'))) for ele in settings.PLUGINS_URL_PATTERNS] + [
             path("api/miniapp/", include("miniapp.urls")),
+            path("api/shop/", include("shop.urls")),
         ]
 )
