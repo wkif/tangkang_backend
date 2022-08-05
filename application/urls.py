@@ -88,7 +88,6 @@ urlpatterns = (
             path("api/init/dictionary/", InitDictionaryViewSet.as_view()),
             path("api/init/settings/", InitSettingsViewSet.as_view()),
             path("apiLogin/", ApiLogin.as_view()),
-
         ]
         + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
         + static(settings.STATIC_URL, document_root=settings.STATIC_URL)

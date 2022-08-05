@@ -12,7 +12,7 @@ from application.settings import BASE_DIR
 
 # 使用mysql时，改为此配置
 DATABASE_ENGINE = "django.db.backends.mysql"
-DATABASE_NAME = 'tangkangtest2' # mysql 时使用
+DATABASE_NAME = 'tangkangtest2'  # mysql 时使用
 
 # 数据库地址 改为自己数据库地址
 DATABASE_HOST = "127.0.0.1"
@@ -44,3 +44,10 @@ LOGIN_NO_CAPTCHA_AUTH = True
 # ================================================= #
 
 ALLOWED_HOSTS = ["*"]
+
+# ================================================= #
+# 七牛云
+QN_BASE_DIR = 'http://tkimg.kifroom.icu/'
+AccessKey = 'IxZrTCrRIaascxiWnKKJIEXOPH72Ka0fYypLtn-D'
+SecretKey = 'CNqVZ-sJ1Zv2WKqxWDRM9UubbsYG3T_UUwVq9nK8'
+bucked_name='tangkangyoudao'
