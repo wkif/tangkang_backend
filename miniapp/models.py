@@ -217,7 +217,26 @@ class dietRecords(models.Model):
         verbose_name_plural = verbose_name
 
 
+class sportsType(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(u'名称', max_length=50, default='', null=True, blank=True)
+    heat = models.FloatField(u'热量', default=0)
+
+
+# 运动记录表
+class sportsRecords(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    startTime = models.DateTimeField(u'开始时间', null=True, blank=True)
+    endTime = models.DateTimeField(u'结束时间', null=True, blank=True)
+    time=models.DateTimeField('记录日期', auto_now_add=True)
+    sportstype = models.ForeignKey(sportsType, on_delete=models.CASCADE)
+    heat = models.FloatField(u'热量', default=0)
+
+
 # 系统区============================================================系统区
+
+
 # 公告表
 class announcement(models.Model):
     id = models.AutoField(primary_key=True)
@@ -265,9 +284,78 @@ class integralHistory(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
     integralType = models.ForeignKey(IntegralDetail, on_delete=models.CASCADE)
+    integral = models.IntegerField(u'积分', default=0, null=True, blank=True)
     time = models.DateTimeField(u'时间', auto_now_add=True)
 
     class Meta:
         db_table = daName + "integralHistory"
         verbose_name = "积分记录明细"
+        verbose_name_plural = verbose_name
+
+
+# 资讯
+class news(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(u'标题', max_length=50, default='', null=True, blank=True)
+    content = models.TextField(u'内容', default='', null=True, blank=True)
+    tag = models.CharField(u'标签', max_length=50, default='', null=True, blank=True)
+    createTime = models.DateTimeField(u'创建时间', auto_now_add=True)
+    updateTime = models.DateTimeField(u'更新时间', auto_now=True)
+    is_delete = models.BooleanField(u'是否删除', default=False)
+    top = models.BooleanField(u'是否置顶', default=False)
+    cover = models.CharField(null=True, blank=True, verbose_name='封面', max_length=200)
+
+    class Meta:
+        db_table = daName + "news"
+        verbose_name = "资讯"
+        verbose_name_plural = verbose_name
+
+
+class commitOfNews(models.Model):
+    id = models.AutoField(primary_key=True)
+    news = models.ForeignKey(news, on_delete=models.CASCADE)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    content = models.TextField(u'内容', default='', null=True, blank=True)
+    time = models.DateTimeField(u'时间', auto_now_add=True)
+    is_delete = models.BooleanField(u'是否删除', default=False)
+
+    class Meta:
+        db_table = daName + "commitOfNews"
+        verbose_name = "资讯评论"
+        verbose_name_plural = verbose_name
+
+
+class pagePathList(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(u'名称', max_length=50, default='', null=True, blank=True)
+    path = models.CharField(u'路径', max_length=50, default='', null=True, blank=True)
+
+    class Meta:
+        db_table = daName + "pagePathList"
+        verbose_name = "页面路径"
+        verbose_name_plural = verbose_name
+
+
+class tabList(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(u'名称', max_length=50, default='', null=True, blank=True)
+    pagePath = models.ForeignKey(pagePathList, on_delete=models.CASCADE)
+    iconPath = models.CharField(null=True, blank=True, verbose_name='默认图标', max_length=200)
+    selectedIconPath = models.CharField(null=True, blank=True, verbose_name='选中图标', max_length=200)
+    is_active = models.BooleanField(u'是否展示', default=True)
+
+    class Meta:
+        db_table = daName + "tabList"
+        verbose_name = "底部导航栏"
+        verbose_name_plural = verbose_name
+
+
+class hotSearch(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(u'名称', max_length=50, default='', null=True, blank=True)
+    count = models.IntegerField(u'次数', default=0)
+
+    class Meta:
+        db_table = daName + "hotSearch"
+        verbose_name = "热搜"
         verbose_name_plural = verbose_name

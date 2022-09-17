@@ -13,12 +13,17 @@ from dvadmin.system.views.admin.operation_log import OperationLogViewSet
 from dvadmin.system.views.admin.role import RoleViewSet
 from dvadmin.system.views.admin.system_config import SystemConfigViewSet
 from dvadmin.system.views.admin.user import UserViewSet
+from dvadmin.system.views.miniapp.commitOfNews import commitOfNewsModelViewset
+from dvadmin.system.views.miniapp.tabList import tabListModelViewset
 
 from dvadmin.system.views.miniapp.user import miniappUserModelViewset
 from dvadmin.system.views.miniapp.foodData import foodDatabaseModelViewset
 from dvadmin.system.views.miniapp.userAgreement import userAgreementModelViewset
 from dvadmin.system.views.miniapp.announcement import announcementbaseModelViewset
 from dvadmin.system.views.miniapp.integralDetail import integralDetailModelViewset
+from dvadmin.system.views.miniapp.news import newsModelViewset
+
+from dvadmin.system.views.shop.view import *
 
 system_url = routers.SimpleRouter()
 system_url.register(r'menu', MenuViewSet)
@@ -39,6 +44,14 @@ system_url.register(r'announcement', announcementbaseModelViewset)
 system_url.register(r'userAgreement', userAgreementModelViewset)
 system_url.register(r'integralDetail', integralDetailModelViewset)
 
+system_url.register(r'SKUDetail', SKUModelViewset)
+system_url.register(r'SKUCategory', SKUCategoryModelViewset)
+system_url.register(r'SKUBrand', SKUBrandModelViewset)
+system_url.register(r'OrderInfo', OrderInfoModelViewset)
+system_url.register(r'news', newsModelViewset)
+system_url.register(r'newsCommit', commitOfNewsModelViewset)
+system_url.register(r'tabList', tabListModelViewset)
+
 urlpatterns = [
     path('user/export/', UserViewSet.as_view({'post': 'export_data', })),
     path('user/import/', UserViewSet.as_view({'get': 'import_data', 'post': 'import_data'})),
@@ -49,5 +62,12 @@ urlpatterns = [
     path('login_log/', LoginLogViewSet.as_view({'get': 'list'})),
     path('login_log/<int:pk>/', LoginLogViewSet.as_view({'get': 'retrieve'})),
     path('dept_lazy_tree/', DeptViewSet.as_view({'get': 'dept_lazy_tree'})),
+    path('commodityDlassificationData/', commodityDlassificationData.as_view()),
+    path('getBrandData/', getBrandData.as_view()),
+    path('getDailyOrder/', getDailyOrder.as_view()),
+
+    #     订单
+    # path('getOrderLidt/', getOrderLidt.as_view()),
+
 ]
 urlpatterns += system_url.urls

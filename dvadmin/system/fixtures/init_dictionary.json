@@ -546,5 +546,126 @@
                 "children": []
             }
         ]
+    },
+     {
+        "label": "食品类型",
+        "value": "foodtype",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 1,
+        "remark": null,
+        "children": [
+            {
+                "label": "蔬菜",
+                "value": "0",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 0,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "水果",
+                "value": "1",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "肉类",
+                "value": "2",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "蛋类",
+                "value": "3",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "奶类",
+                "value": "4",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "鱼类",
+                "value": "5",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 5,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "豆类",
+                "value": "6",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 6,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "谷物",
+                "value": "7",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 7,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "其他",
+                "value": "8",
+                "parent": 48,
+                "type": 1,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 8,
+                "remark": null,
+                "children": []
+            }
+        ]
     }
 ]

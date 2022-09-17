@@ -14,7 +14,7 @@ from dvadmin.system.views.admin.api_white_list import ApiWhiteListInitSerializer
 from dvadmin.system.views.admin.dept import DeptInitSerializer
 from dvadmin.system.views.admin.dictionary import DictionaryInitSerializer
 from dvadmin.system.views.admin.system_config import SystemConfigInitSerializer
-from miniapp.serializers import integralDetailModelserializers
+from miniapp.serializers import integralDetailModelserializers, pagePathListModelserializers, tabListModelserializers
 
 
 class Initialize(CoreInitialize):
@@ -65,7 +65,20 @@ class Initialize(CoreInitialize):
         """
         初始化积分表
         """
-        self.init_base(integralDetailModelserializers, unique_fields=['name', 'integral',])
+        self.init_base(integralDetailModelserializers, unique_fields=['name', 'integral', ])
+
+    def init_pagepathlist(self):
+        """
+        初始化页面路径表
+        """
+        self.init_base(pagePathListModelserializers, unique_fields=['name', 'path', ])
+
+    def init_tablist(self):
+        """
+        初始化页面tab表
+        """
+        self.init_base(tabListModelserializers,
+                       unique_fields=['name', 'pagePath', 'iconPath', 'selectedIconPath', 'is_active', ])
 
     def run(self):
         self.init_dept()
@@ -76,6 +89,8 @@ class Initialize(CoreInitialize):
         self.init_dictionary()
         self.init_system_config()
         self.init_integral()
+        self.init_pagepathlist()
+        self.init_tablist()
 
 
 if __name__ == "__main__":

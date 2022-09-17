@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 from random import choice
 from string import ascii_uppercase as uc, digits as dg
 import time
@@ -8,6 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
+from django.utils import timezone
 from rest_framework import permissions
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
@@ -19,11 +21,14 @@ from miniapp.extensions.auth import JwtQueryParamsAuthentication
 from miniapp.models import *
 from miniapp.serializers import userserializer, addressSerializer, JfwTokenObtainPairSerializer, bloodSugarSerializer, \
     periodicalLoggingSerializer, announcementbaseserializer, foodDatabaseSerializer, dietRecordsSerializer, \
-    integralHistorySerializer
+    integralHistorySerializer, newsserializer, commitOfNewsserializer, sportsRecordsSerializer, sportsTypeSerializer
 from miniapp.utils.checkIdnum import check_id_data
 from miniapp.utils.creatToken import creattoken
 from miniapp.utils.wxlogin import get_login_info
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from shop.models import SKU, OrderInfo, goodsCategory
+from shop.serializers import SKUModelserializers, OrderInfoModelserializers
 
 
 def addIntegralHistory(user, integralType):
@@ -93,6 +98,23 @@ class getUserIntegral(APIView):
             res['data'] = user.integral
             res['status'] = 200
             return JsonResponse(res)
+
+
+class getTabList(APIView):
+    def get(self, request):
+        res = {}
+        tablist = tabList.objects.filter(is_active=True).all()
+        list = []
+        for item in tablist:
+            list.append({
+                'name': item.name,
+                'selectedIconPath': item.selectedIconPath,
+                'iconPath': item.iconPath,
+                'pagePath': item.pagePath.path
+            })
+        res['data'] = list
+        res['status'] = 200
+        return JsonResponse(res)
 
 
 class changespeed(APIView):
@@ -957,3 +979,636 @@ class getIntegralHistory(APIView):
             res['data'] = res['data'] = integralHistorySerializer(integralHistoryData, many=True).data
             res['status'] = 200
             return JsonResponse(res)
+
+
+# 商店
+class getShopList(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def get(self, request):
+        res = {}
+
+        shopList = SKU.objects.filter(status=1)
+        if not shopList:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            data = []
+            categoryList = goodsCategory.objects.all()
+            for category in categoryList:
+                goods = SKU.objects.filter(category=category, status=1)
+                data.append({
+                    "id": category.id,
+                    "name": category.name,
+                    "goods": SKUModelserializers(goods, many=True).data
+                })
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getTopGoods(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def get(self, request):
+        res = {}
+        goods = SKU.objects.filter(status=1, recommended=1)[:3]
+        if not goods:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = SKUModelserializers(goods, many=True).data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getGoodDetail(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        goodsId = request.data.get('goodsId')
+        goods = SKU.objects.filter(id=goodsId, status=1).first()
+        if not goods:
+            res['data'] = '商品不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            data = SKUModelserializers(goods).data
+            data['category'] = goodsCategory.objects.filter(id=data['category']).first().name
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getGoodById(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        goodsId = request.data.get('goodsId')
+        goods = SKU.objects.filter(id=goodsId, status=1).first()
+        if not goods:
+            res['data'] = '商品不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            data = SKUModelserializers(goods).data
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class addOrder(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        addressId = request.data.get('addressId')
+        addr = address.objects.filter(id=addressId).first()
+        if not address:
+            res['data'] = '地址不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        goodId = request.data.get('goodId')
+        good = SKU.objects.filter(id=goodId).first()
+        if not good:
+            res['data'] = '商品不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        total_count = request.data.get('total_count')
+        total_price = request.data.get('total_price')
+
+        good.stock -= total_count
+        good.sales += total_count
+        good.save()
+        ord = OrderInfo.objects.create(user=user, address=addr, good=good, total_count=total_count,
+                                       total_price=total_price)
+        res['data'] = '下单成功，请尽快付款'
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class payment(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        orderId = request.data.get('orderId')
+        order = OrderInfo.objects.filter(id=orderId).first()
+        if not order:
+            res['data'] = '订单不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        if order.order_status == 6:
+            res['data'] = '订单已取消'
+            res['status'] = 400
+            return JsonResponse(res)
+        if order.order_status == 1:
+            Amount_payable = order.total_price
+            integral = user.integral
+            if integral >= Amount_payable:
+                user.integral = user.integral - Amount_payable
+                user.save()
+                order.order_status = 2
+                order.save()
+                integralHistory.objects.create(user=user, integral=Amount_payable,
+                                               integralType=IntegralDetail.objects.filter(id=7).first())
+
+                res['data'] = '支付成功'
+                res['status'] = 200
+                return JsonResponse(res)
+            else:
+                res['data'] = '积分不足'
+                res['status'] = 400
+                return JsonResponse(res)
+        else:
+            res['data'] = '订单已支付'
+            res['status'] = 400
+            return JsonResponse(res)
+
+
+class cancelOrder(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        orderId = request.data.get('orderId')
+        order = OrderInfo.objects.filter(id=orderId).first()
+        if not order:
+            res['data'] = '订单不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        order.order_status = 6
+        order.save()
+        res['data'] = '取消成功'
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class getMyOrderList(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        orderList = OrderInfo.objects.filter(user=user).order_by('-update_datetime')
+        if not orderList:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            # data = {
+            #     "1": OrderInfoModelserializers(
+            #         OrderInfo.objects.filter(user=user, order_status=1).order_by('-update_datetime'), many=True).data,
+            #     "2": OrderInfoModelserializers(
+            #         OrderInfo.objects.filter(user=user, order_status=2).order_by('-update_datetime'), many=True).data,
+            #     "3": OrderInfoModelserializers(
+            #         OrderInfo.objects.filter(user=user, order_status=3).order_by('-update_datetime'), many=True).data,
+            #     "4": OrderInfoModelserializers(
+            #         OrderInfo.objects.filter(user=user, order_status=4).order_by('-update_datetime'), many=True).data,
+            #     "5": OrderInfoModelserializers(
+            #         OrderInfo.objects.filter(user=user, order_status=5).order_by('-update_datetime'), many=True).data,
+            #     "6": OrderInfoModelserializers(
+            #         OrderInfo.objects.filter(user=user, order_status=6).order_by('-update_datetime'), many=True).data,
+            # }
+            data = []
+            data.append(OrderInfoModelserializers(
+                OrderInfo.objects.filter(user=user, order_status=1).order_by('-update_datetime'), many=True).data, )
+            data.append(OrderInfoModelserializers(
+                OrderInfo.objects.filter(user=user, order_status=2).order_by('-update_datetime'), many=True).data, )
+            data.append(OrderInfoModelserializers(
+
+                OrderInfo.objects.filter(user=user, order_status=3).order_by('-update_datetime'), many=True).data, )
+            data.append(OrderInfoModelserializers(
+                OrderInfo.objects.filter(user=user, order_status=4).order_by('-update_datetime'), many=True).data, )
+            data.append(OrderInfoModelserializers(
+                OrderInfo.objects.filter(user=user, order_status=5).order_by('-update_datetime'), many=True).data, )
+            data.append(OrderInfoModelserializers(
+                OrderInfo.objects.filter(user=user, order_status=6).order_by('-update_datetime'), many=True).data, )
+
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class confirmOrder(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+
+        orderId = request.data.get('orderId')
+        order = OrderInfo.objects.filter(id=orderId).first()
+        if not order:
+            res['data'] = '订单不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        if order.order_status == 3:
+            order.order_status = 4
+            order.save()
+            res['data'] = '确认成功'
+            res['status'] = 200
+            return JsonResponse(res)
+        else:
+            res['data'] = '订单状态不正确'
+            res['status'] = 400
+            return JsonResponse(res)
+
+
+# 资讯-------------------------------------------------
+class getNewsList(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def get(self, request):
+        res = {}
+        newsList = news.objects.all().order_by('-updateTime')
+        if not newsList:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            for a in newsList:
+                a.content = re.sub('<[^<]+?>', '', a.content).replace('\n', '').strip()
+            data = newsserializer(newsList, many=True).data
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getTopNews(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def get(self, request):
+        res = {}
+        newsList = news.objects.filter(top=True, is_delete=False).order_by('-updateTime')
+        if not newsList:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            data = []
+            for n in newsList:
+                data.append({
+                    'id': n.id,
+                    'title': n.title,
+                    'url': n.cover,
+                })
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class searchNews(APIView):
+    def post(self, request):
+        res = {}
+        newsname = request.data.get('newsname')
+        if not newsname:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+
+        new = news.objects.filter(title__icontains=newsname, is_delete=False).all()
+        if not new:
+            res['data'] = '无数据'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            h = hotSearch.objects.filter(name=newsname).first()
+            if h:
+                h.count += 1
+                h.save()
+            else:
+                hotSearch.objects.create(name=newsname, count=1)
+            data = []
+            for item in new:
+                data.append({
+                    'id': item.id,
+                    'title': item.title
+                })
+            res['data'] = data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getHotSearch(APIView):
+    authentication_classes = ()
+
+    def get(self, request):
+        res = {}
+        list = hotSearch.objects.all().order_by('count')[:5]
+        data = []
+        for item in list:
+            data.append({
+                'id': item.id,
+                'name': item.name
+            })
+        res['data'] = data
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class getNewsDetail(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        newsId = request.data.get('newsId')
+        new = news.objects.filter(id=newsId, is_delete=False).first()
+        if not new:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = {
+                'news': newsserializer(new).data,
+            }
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getCommitOfNews(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        newsId = request.data.get('newsId')
+        new = news.objects.filter(id=newsId).first()
+        if not new:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            commitList = commitOfNews.objects.filter(news=new, is_delete=False).order_by('-time')
+            res['data'] = commitOfNewsserializer(commitList, many=True).data
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class addCommit(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        newsId = request.data.get('newsId')
+        new = news.objects.filter(id=newsId, is_delete=False).first()
+        if not new:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        content = request.data.get('content')
+        hasC = commitOfNews.objects.filter(user=user, news=new).all().order_by('-time')
+        if hasC:
+            Time = hasC[0].time
+            # 距离当前时间的时间间隔
+            timeGap = (datetime.datetime.now() - Time).seconds
+            if timeGap < 60:
+                res['data'] = '评论过于频繁'
+                res['status'] = 400
+                return JsonResponse(res)
+
+        commit = commitOfNews.objects.create(news=new, user=user, content=content)
+        if not commit:
+            res['data'] = '添加失败'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = '添加成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class deleteCommit(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        newsId = request.data.get('newsId')
+        new = news.objects.filter(id=newsId, is_delete=False).first()
+        if not new:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        commitId = request.data.get('commitId')
+        commit = commitOfNews.objects.filter(id=commitId, is_delete=False).first()
+        if not commit:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        if commit.user != user:
+            res['data'] = '没有权限'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            commit.is_delete = True
+            commit.save()
+            res['data'] = '删除成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+# 运动记录
+class addSportsRecords(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        sportstypeid = request.data.get('sportstypeid')
+        type = sportsType.objects.filter(id=sportstypeid).first()
+        if not type:
+            res['data'] = '类型不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        startTime = request.data.get('startTime')
+        endTime = request.data.get('endTime')
+        startTime = datetime.datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
+        endTime = datetime.datetime.strptime(endTime, '%Y-%m-%d %H:%M:%S')
+        total_seconds = (endTime - startTime).total_seconds()
+        mins = round(total_seconds / 60,2)
+        print(mins)
+        heat = type.heat * mins
+        sportsRecords.objects.create(user=user, startTime=startTime, endTime=endTime, sportstype=type, heat=heat)
+        res['data'] = '记录成功'
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class getSportsRecordsByid(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        list = sportsRecords.objects.filter(user=user).all().order_by('-time')
+        if not list:
+            res['data'] = '暂无数据'
+            res['status'] = 400
+            return JsonResponse(res)
+        res['data'] = sportsRecordsSerializer(list, many=True).data
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class deleteSportsRecordsByid(APIView):
+    # authentication_classes = (authentication.JWTAuthentication,)
+
+    authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        SportsRecordsId = request.data.get('SportsRecordsId')
+        s = sportsRecords.objects.filter(id=SportsRecordsId).first()
+        if not s:
+            res['data'] = '记录不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        s.delete()
+        res['data'] = '已经删除'
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class dailySportList(APIView):
+    def get(self, request):
+        res = {}
+        data = []
+
+        startdate = datetime.date(
+            datetime.datetime.now().year,
+            datetime.datetime.now().month,
+            datetime.datetime.now().day)
+        enddate = startdate + datetime.timedelta(days=1)
+        list = sportsRecords.objects.filter(startTime__range=[startdate, enddate]).order_by('-heat')
+        print(list)
+        for item in list:
+            data.append({
+                'id': item.id,
+                'user': {
+                    'userid': item.user.id,
+                    'username': item.user.username,
+                    'avatar': item.user.avatar,
+                    'gender': item.user.gender,
+                },
+                'sportstype': item.sportstype.name,
+                'heat': item.heat,
+                'startTime': item.startTime,
+                # 'endTime': item.endTime,
+            })
+        res['data'] = data
+        res['status'] = 200
+        return JsonResponse(res)
+
+
+class getsportsType(APIView):
+    def get(self, request):
+        res = {}
+        list = sportsType.objects.all()
+        res['data'] = sportsTypeSerializer(list, many=True).data
+        res['status'] = 200
+        return JsonResponse(res)

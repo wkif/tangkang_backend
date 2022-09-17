@@ -177,6 +177,144 @@ class integralDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# 资讯
+class newsModelserializers(CustomModelSerializer):
+    is_delete = serializers.SerializerMethodField()
+    top = serializers.SerializerMethodField()
+
+    def get_is_delete(self, obj):
+        if obj.is_delete:
+            return '已删除'
+        else:
+            return '未删除'
+
+    def get_top(self, obj):
+        if obj.top:
+            return '是'
+        else:
+            return '否'
+
+    class Meta:
+        model = news
+        fields = '__all__'
+
+
+class newsModelCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = news
+        fields = '__all__'
+
+
+class newsserializer(serializers.ModelSerializer):
+    class Meta:
+        model = news
+        fields = '__all__'
+
+
+# 評論
+class commitOfNewsModelserializers(CustomModelSerializer):
+    news = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+    is_delete = serializers.SerializerMethodField()
+
+    def get_news(self, obj):
+        return newsModelserializers(obj.news).data
+
+    def get_user(self, obj):
+        return {
+            'id': obj.user.id,
+            'username': obj.user.username,
+            'avatar': obj.user.avatar,
+        }
+
+    def get_is_delete(self, obj):
+        if obj.is_delete:
+            return '已删除'
+        else:
+            return '未删除'
+
+    class Meta:
+        model = commitOfNews
+        fields = '__all__'
+
+
+class commitOfNewsModelCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = commitOfNews
+        fields = '__all__'
+
+
+class commitOfNewsserializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return {
+            'id': obj.user.id,
+            'username': obj.user.username,
+            'avatar': obj.user.avatar
+        }
+
+    class Meta:
+        model = commitOfNews
+        fields = '__all__'
+
+
+# 页面路径
+
+class pagePathListModelserializers(CustomModelSerializer):
+    class Meta:
+        model = pagePathList
+        fields = '__all__'
+
+
+class pagePathListCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = pagePathList
+        fields = '__all__'
+
+
+class pagePathListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = pagePathList
+        fields = '__all__'
+
+
+# 底部tab
+
+class tabListModelserializers(CustomModelSerializer):
+    class Meta:
+        model = tabList
+        fields = '__all__'
+
+
+class tabListCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = tabList
+        fields = '__all__'
+
+
+class tabListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = tabList
+        fields = '__all__'
+
+
 # 后台管理端======================================================end
 
 
@@ -227,10 +365,31 @@ class integralHistorySerializer(serializers.ModelSerializer):
 
     def get_integralType(self, obj):
         return {
-            'type':integralDetailSerializer(obj.integralType).data['name'],
-            'integral':integralDetailSerializer(obj.integralType).data['integral']
+            'type': integralDetailSerializer(obj.integralType).data['name'],
+            'integral': integralDetailSerializer(obj.integralType).data['integral']
         }
 
     class Meta:
         model = integralHistory
+        fields = '__all__'
+
+
+class sportsRecordsSerializer(serializers.ModelSerializer):
+    sportstype = serializers.SerializerMethodField()
+    user=serializers.SerializerMethodField()
+
+    def get_sportstype(self, obj):
+        return {
+            "name": obj.sportstype.name,
+            "id": obj.sportstype.id
+        }
+    def get_user(self,obj):
+        return obj.user.username
+
+    class Meta:
+        model = sportsRecords
+        fields = '__all__'
+class sportsTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sportsType
         fields = '__all__'

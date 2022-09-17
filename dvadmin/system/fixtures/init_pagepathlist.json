@@ -1,0 +1,18 @@
+[
+  {
+    "name": "首页",
+    "path": "/pages/home/index"
+  },
+  {
+    "name": "记录",
+    "path": "/pages/record/index"
+  },
+  {
+    "name": "商城",
+    "path": "/pages/shop/index"
+  },
+  {
+    "name": "我的",
+    "path": "/pages/user/index"
+  }
+]

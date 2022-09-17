@@ -1,0 +1,30 @@
+[
+  {
+    "name": "首页",
+    "pagePath": 1,
+    "iconPath": "/assets/icon/home.png",
+    "selectedIconPath": "/assets/icon/home-active.png",
+    "is_active": true
+  },
+  {
+    "name": "记录",
+    "pagePath": 2,
+    "iconPath": "/assets/icon/add.png",
+    "selectedIconPath": "/assets/icon/add-active.png",
+    "is_active": true
+  },
+  {
+    "name": "商城",
+    "pagePath": 3,
+    "iconPath": "/assets/icon/shop.png",
+    "selectedIconPath": "/assets/icon/shop-active.png",
+    "is_active": true
+  },
+  {
+    "name": "我的",
+    "pagePath": 4,
+    "iconPath": "/assets/icon/user.png",
+    "selectedIconPath": "/assets/icon/user-active.png",
+    "is_active": true
+  }
+]

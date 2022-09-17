@@ -22,6 +22,7 @@ urlpatterns = [
     # 基础功能
     path('login/', loginApi.as_view()),
     path('getUserAgreement/', getUserAgreement.as_view()),
+    path('getTabList/', getTabList.as_view()),
     # 语音开关
     path('changespeed/', changespeed.as_view()),
     path('getspeed/', getSpeed.as_view()),
@@ -60,5 +61,32 @@ urlpatterns = [
     # 积分记录
     path('getIntegralHistory/', getIntegralHistory.as_view()),
     path('getUserIntegral/', getUserIntegral.as_view()),
+
+    #     shop
+    path('getShopList/', getShopList.as_view()),
+    path('addOrder/', addOrder.as_view()),
+    path('getMyOrderList/', getMyOrderList.as_view()),
+    path('cancelOrder/', cancelOrder.as_view()),
+    path('getTopGoods/', getTopGoods.as_view()),
+    path('getGoodDetail/', getGoodDetail.as_view()),
+
+    path('payment/', payment.as_view()),
+    path('confirmOrder/', confirmOrder.as_view()),
+
+    #     资讯
+    path('getNewsList/', getNewsList.as_view()),
+    path('getNewsDetail/', getNewsDetail.as_view()),
+    path('getNewsComment/', getCommitOfNews.as_view()),
+    path('addCommit/', addCommit.as_view()),
+    path('deleteCommit/', deleteCommit.as_view()),
+    path('getTopNews/', getTopNews.as_view()),
+    path('searchNews/', searchNews.as_view()),
+    path('getHotSearch/', getHotSearch.as_view()),
+    #     运动记录
+    path('addSportsRecords/', addSportsRecords.as_view()),
+    path('getSportsRecordsByid/', getSportsRecordsByid.as_view()),
+    path('deleteSportsRecordsByid/', deleteSportsRecordsByid.as_view()),
+    path('dailySportList/', dailySportList.as_view()),
+    path('getsportsType/', getsportsType.as_view()),
 
 ]
