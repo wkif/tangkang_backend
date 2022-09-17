@@ -315,6 +315,56 @@ class tabListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# sportsType
+
+class sportsTypeModelserializers(CustomModelSerializer):
+    class Meta:
+        model = sportsType
+        fields = '__all__'
+
+
+class sportsTypeCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = sportsType
+        fields = '__all__'
+
+
+# sportsRecords
+class sportsRecordsModelserializers(CustomModelSerializer):
+    sportstype = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
+    def get_sportstype(self, obj):
+        return {
+            "name": obj.sportstype.name,
+            "id": obj.sportstype.id
+        }
+
+    def get_user(self, obj):
+        return {
+            'username': obj.user.username,
+            'id': obj.user.id
+        }
+
+    class Meta:
+        model = sportsRecords
+        fields = '__all__'
+
+
+class sportsRecordsCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = sportsRecords
+        fields = '__all__'
+
+
 # 后台管理端======================================================end
 
 
@@ -376,19 +426,22 @@ class integralHistorySerializer(serializers.ModelSerializer):
 
 class sportsRecordsSerializer(serializers.ModelSerializer):
     sportstype = serializers.SerializerMethodField()
-    user=serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     def get_sportstype(self, obj):
         return {
             "name": obj.sportstype.name,
             "id": obj.sportstype.id
         }
-    def get_user(self,obj):
+
+    def get_user(self, obj):
         return obj.user.username
 
     class Meta:
         model = sportsRecords
         fields = '__all__'
+
+
 class sportsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = sportsType

@@ -229,7 +229,7 @@ class sportsRecords(models.Model):
     user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
     startTime = models.DateTimeField(u'开始时间', null=True, blank=True)
     endTime = models.DateTimeField(u'结束时间', null=True, blank=True)
-    time=models.DateTimeField('记录日期', auto_now_add=True)
+    time = models.DateTimeField('记录日期', auto_now_add=True)
     sportstype = models.ForeignKey(sportsType, on_delete=models.CASCADE)
     heat = models.FloatField(u'热量', default=0)
 

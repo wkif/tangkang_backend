@@ -14,6 +14,8 @@ from dvadmin.system.views.admin.role import RoleViewSet
 from dvadmin.system.views.admin.system_config import SystemConfigViewSet
 from dvadmin.system.views.admin.user import UserViewSet
 from dvadmin.system.views.miniapp.commitOfNews import commitOfNewsModelViewset
+from dvadmin.system.views.miniapp.sportsRecords import sportsRecordsModelViewset
+from dvadmin.system.views.miniapp.sportsType import sportsTypeModelViewset
 from dvadmin.system.views.miniapp.tabList import tabListModelViewset
 
 from dvadmin.system.views.miniapp.user import miniappUserModelViewset
@@ -24,6 +26,7 @@ from dvadmin.system.views.miniapp.integralDetail import integralDetailModelViews
 from dvadmin.system.views.miniapp.news import newsModelViewset
 
 from dvadmin.system.views.shop.view import *
+from miniapp.views import getsportsType
 
 system_url = routers.SimpleRouter()
 system_url.register(r'menu', MenuViewSet)
@@ -51,6 +54,8 @@ system_url.register(r'OrderInfo', OrderInfoModelViewset)
 system_url.register(r'news', newsModelViewset)
 system_url.register(r'newsCommit', commitOfNewsModelViewset)
 system_url.register(r'tabList', tabListModelViewset)
+system_url.register(r'sportsType', sportsTypeModelViewset)
+system_url.register(r'sportsRecords', sportsRecordsModelViewset)
 
 urlpatterns = [
     path('user/export/', UserViewSet.as_view({'post': 'export_data', })),
@@ -65,6 +70,7 @@ urlpatterns = [
     path('commodityDlassificationData/', commodityDlassificationData.as_view()),
     path('getBrandData/', getBrandData.as_view()),
     path('getDailyOrder/', getDailyOrder.as_view()),
+    path('getsportsType/', getsportsType.as_view()),
 
     #     订单
     # path('getOrderLidt/', getOrderLidt.as_view()),
