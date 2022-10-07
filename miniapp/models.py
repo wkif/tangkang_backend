@@ -216,6 +216,19 @@ class dietRecords(models.Model):
         verbose_name = "饮食记录"
         verbose_name_plural = verbose_name
 
+#     饮食目标
+class dietTargetValue(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    heat = models.FloatField(u'热量', default=0)
+    createDate = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    updateDate = models.DateTimeField(verbose_name="更新时间", auto_now=True)
+
+    class Meta:
+        db_table = daName + "dietTargetValue"
+        verbose_name = "饮食目标值"
+        verbose_name_plural = verbose_name
+
 
 class sportsType(models.Model):
     id = models.AutoField(primary_key=True)
@@ -232,6 +245,20 @@ class sportsRecords(models.Model):
     time = models.DateTimeField('记录日期', auto_now_add=True)
     sportstype = models.ForeignKey(sportsType, on_delete=models.CASCADE)
     heat = models.FloatField(u'热量', default=0)
+
+
+#     运动目标
+class sportTargetValue(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    heat = models.FloatField(u'热量', default=0)
+    createDate = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    updateDate = models.DateTimeField(verbose_name="更新时间", auto_now=True)
+
+    class Meta:
+        db_table = daName + "sportTargetValue"
+        verbose_name = "运动目标值"
+        verbose_name_plural = verbose_name
 
 
 # 系统区============================================================系统区

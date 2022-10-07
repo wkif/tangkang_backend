@@ -16,7 +16,25 @@ Including another URLconf
 from django.conf.urls import url
 from django.urls import path
 
-from miniapp.views import *
+from miniapp.views.BloodSugarData import getBloodSugarDataByUserId, addBloodSugarData, deleteBloodSugarData, \
+    getLastBloodSugarDataByUserId
+from miniapp.views.Integral import getIntegralHistory
+from miniapp.views.Notice import getTopNoticeData, getNoticeData
+from miniapp.views.Sports import addSportsRecords, deleteSportsRecordsByid, dailySportList, getsportsType, \
+    getSportsRecordsByid
+from miniapp.views.Target import addBloodGlucoseTargetValue
+from miniapp.views.baseview import getUserAgreement, getTabList, changespeed, getSpeed
+from miniapp.views.foodDatabase import getfoodDatabase, getDietRecords, getfoodDatabaseByname, deleteDietRecords, \
+    addDietRecords
+from miniapp.views.news import getNewsList, getCommitOfNews, addCommit, getNewsDetail, deleteCommit, getTopNews, \
+    searchNews, getHotSearch
+from miniapp.views.periodicalLoggingData import getperiodicalLoggingDataByUserId, deletePeriodicalLoggingData, \
+    addPeriodicalLoggingData
+from miniapp.views.shops import getShopList, getMyOrderList, cancelOrder, addOrder, getTopGoods, getGoodDetail, payment, \
+    confirmOrder
+
+from miniapp.views.user import loginApi, getAddressByUsrid, addAddressByUserid, deleteAddressByUserid, editAddress, \
+    editUserInfo, getUserInfoByUserId, realnameAuthentication, getUserIntegral
 
 urlpatterns = [
     # 基础功能

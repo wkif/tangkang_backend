@@ -26,7 +26,7 @@ from dvadmin.system.views.miniapp.integralDetail import integralDetailModelViews
 from dvadmin.system.views.miniapp.news import newsModelViewset
 
 from dvadmin.system.views.shop.view import *
-from miniapp.views import getsportsType
+from miniapp.views.Sports import getsportsType
 
 system_url = routers.SimpleRouter()
 system_url.register(r'menu', MenuViewSet)
