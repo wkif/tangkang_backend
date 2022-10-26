@@ -1,34 +1,14 @@
-import datetime
-import json
-import re
 from random import choice
 from string import ascii_uppercase as uc, digits as dg
 import time
-
 from django.http import JsonResponse
-from django.shortcuts import render
-
-# Create your views here.
-from django.utils import timezone
-from rest_framework import permissions
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework_simplejwt import authentication
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from dvadmin.utils.permission import CustomPermission
-from miniapp.extensions.auth import JwtQueryParamsAuthentication
 from miniapp.models import *
-from miniapp.serializers import userserializer, addressSerializer, JfwTokenObtainPairSerializer, bloodSugarSerializer, \
-    periodicalLoggingSerializer, announcementbaseserializer, foodDatabaseSerializer, dietRecordsSerializer, \
-    integralHistorySerializer, newsserializer, commitOfNewsserializer, sportsRecordsSerializer, sportsTypeSerializer
+from miniapp.serializers import userserializer, addressSerializer, JfwTokenObtainPairSerializer
 from miniapp.utils.checkIdnum import check_id_data
-from miniapp.utils.creatToken import creattoken
 from miniapp.utils.wxlogin import get_login_info
-from rest_framework_simplejwt.views import TokenObtainPairView
-
-from shops.models import SKU, OrderInfo, goodsCategory
-from shops.serializers import SKUModelserializers, OrderInfoModelserializers
 
 
 class loginApi(APIView):
