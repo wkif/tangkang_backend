@@ -4,8 +4,6 @@ from rest_framework_simplejwt import authentication
 from miniapp.models import *
 
 
-
-
 # 血糖目标--------------------------------------------------------start
 
 class addBloodGlucoseTargetValue(APIView):
@@ -84,20 +82,172 @@ class getBloodGlucoseTargetValue(APIView):
             return JsonResponse(res)
         else:
             res['data'] = {
-                'targetValue': {
-                    'bloodSugar0_targetValue': targetValue.bloodSugar0_targetValue,
-                    'bloodSugar1_targetValue': targetValue.bloodSugar1_targetValue,
-                    'bloodSugar2_targetValue': targetValue.bloodSugar2_targetValue,
-                    'bloodSugar3_targetValue': targetValue.bloodSugar3_targetValue,
-                    'bloodSugar4_targetValue': targetValue.bloodSugar4_targetValue,
-                    'bloodSugar5_targetValue': targetValue.bloodSugar5_targetValue,
-                    'bloodSugar6_targetValue': targetValue.bloodSugar6_targetValue,
-                    'bloodSugar7_targetValue': targetValue.bloodSugar7_targetValue,
-                    'bloodSugar8_targetValue': targetValue.bloodSugar8_targetValue,
-                    'bloodSugar9_targetValue': targetValue.bloodSugar9_targetValue,
-                },
+                # 'targetValue': {
+                #     'bloodSugar0_targetValue': targetValue.bloodSugar0_targetValue,
+                #     'bloodSugar1_targetValue': targetValue.bloodSugar1_targetValue,
+                #     'bloodSugar2_targetValue': targetValue.bloodSugar2_targetValue,
+                #     'bloodSugar3_targetValue': targetValue.bloodSugar3_targetValue,
+                #     'bloodSugar4_targetValue': targetValue.bloodSugar4_targetValue,
+                #     'bloodSugar5_targetValue': targetValue.bloodSugar5_targetValue,
+                #     'bloodSugar6_targetValue': targetValue.bloodSugar6_targetValue,
+                #     'bloodSugar7_targetValue': targetValue.bloodSugar7_targetValue,
+                #     'bloodSugar8_targetValue': targetValue.bloodSugar8_targetValue,
+                #     'bloodSugar9_targetValue': targetValue.bloodSugar9_targetValue,
+                # },
+                "targetValue": [
+                    {
+                        "name": '空腹血糖',
+                        "value": targetValue.bloodSugar0_targetValue
+                    },
+                    {
+                        "name": '早餐后2小时血糖',
+                        "value": targetValue.bloodSugar1_targetValue
+                    },
+                    {
+                        "name": '午餐前血糖',
+                        "value": targetValue.bloodSugar2_targetValue
+                    },
+                    {
+                        "name": '午餐后2小时血糖',
+                        "value": targetValue.bloodSugar3_targetValue
+                    },
+                    {
+                        "name": '晚餐前血糖',
+                        "value": targetValue.bloodSugar4_targetValue
+                    },
+                    {
+                        "name": '晚餐后2小时血糖',
+                        "value": targetValue.bloodSugar5_targetValue
+                    },
+                    {
+                        "name": '睡前血糖',
+                        "value": targetValue.bloodSugar6_targetValue
+                    },
+                    {
+                        "name": '任意时间血糖',
+                        "value": targetValue.bloodSugar7_targetValue
+                    },
+                    {
+                        "name": '夜间2时血糖',
+                        "value": targetValue.bloodSugar8_targetValue
+                    },
+                    {
+                        "name": '其他',
+                        "value": targetValue.bloodSugar9_targetValue
+                    }
+                ],
                 'createTime': targetValue.createDate.strftime('%Y-%m-%d %H:%M:%S'),
                 'updateTime': targetValue.updateDate.strftime('%Y-%m-%d %H:%M:%S'),
             }
             res['status'] = 200
+            return JsonResponse(res)
+
+
+class addSportTargetValue(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        heat = request.data.get('heat')
+        if not heat:
+            res['data'] = '请输入目标值'
+            res['status'] = 400
+            return JsonResponse(res)
+        targetValue = sportTargetValue.objects.filter(user=user).first()
+        if targetValue:
+            targetValue.heat = heat
+            targetValue.save()
+            res['data'] = '更新成功'
+            res['status'] = 200
+            return JsonResponse(res)
+        else:
+            sportTargetValue.objects.create(user=user, heat=heat)
+            res['data'] = '新建成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getSportTargetValue(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        targetValue = sportTargetValue.objects.filter(user=user).first()
+        if targetValue:
+            res['data'] = {
+                "heat": targetValue.heat,
+                "updateDate": targetValue.updateDate
+            }
+            res['status'] = 200
+            return JsonResponse(res)
+        else:
+            res['data'] = '无记录'
+            res['status'] = 400
+            return JsonResponse(res)
+
+
+class addFoodTargetValue(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        heat = request.data.get('heat')
+        if not heat:
+            res['data'] = '请输入目标值'
+            res['status'] = 400
+            return JsonResponse(res)
+        targetValue = dietTargetValue.objects.filter(user=user).first()
+        if targetValue:
+            targetValue.heat = heat
+            targetValue.save()
+            res['data'] = '更新成功'
+            res['status'] = 200
+            return JsonResponse(res)
+        else:
+            dietTargetValue.objects.create(user=user, heat=heat)
+            res['data'] = '新建成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
+class getFoodTargetValue(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        targetValue = dietTargetValue.objects.filter(user=user).first()
+        if targetValue:
+            res['data'] = {
+                "heat": targetValue.heat,
+                "updateDate": targetValue.updateDate
+            }
+            res['status'] = 200
+            return JsonResponse(res)
+        else:
+            res['data'] = '无记录'
+            res['status'] = 400
             return JsonResponse(res)

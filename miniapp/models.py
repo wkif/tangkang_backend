@@ -337,7 +337,16 @@ class news(models.Model):
         verbose_name = "资讯"
         verbose_name_plural = verbose_name
 
+class likesOfNews(models.Model):
+    id = models.AutoField(primary_key=True)
+    news = models.ForeignKey(news, on_delete=models.CASCADE)
+    user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
+    time = models.DateTimeField(u'时间', auto_now_add=True)
 
+    class Meta:
+        db_table = daName + "likesOfNews"
+        verbose_name = "资讯点赞"
+        verbose_name_plural = verbose_name
 class commitOfNews(models.Model):
     id = models.AutoField(primary_key=True)
     news = models.ForeignKey(news, on_delete=models.CASCADE)

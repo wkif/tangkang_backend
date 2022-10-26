@@ -22,18 +22,19 @@ from miniapp.views.Integral import getIntegralHistory
 from miniapp.views.Notice import getTopNoticeData, getNoticeData
 from miniapp.views.Sports import addSportsRecords, deleteSportsRecordsByid, dailySportList, getsportsType, \
     getSportsRecordsByid
-from miniapp.views.Target import addBloodGlucoseTargetValue
-from miniapp.views.baseview import getUserAgreement, getTabList, changespeed, getSpeed
-from miniapp.views.foodDatabase import getfoodDatabase, getDietRecords, getfoodDatabaseByname, deleteDietRecords, \
+from miniapp.views.Target import addBloodGlucoseTargetValue, getBloodGlucoseTargetValue, addSportTargetValue, \
+    getSportTargetValue, addFoodTargetValue, getFoodTargetValue
+from miniapp.views.Base_View import getUserAgreement, getTabList, changespeed, getSpeed
+from miniapp.views.Food_Database import getfoodDatabase, getDietRecords, getfoodDatabaseByname, deleteDietRecords, \
     addDietRecords
-from miniapp.views.news import getNewsList, getCommitOfNews, addCommit, getNewsDetail, deleteCommit, getTopNews, \
-    searchNews, getHotSearch
-from miniapp.views.periodicalLoggingData import getperiodicalLoggingDataByUserId, deletePeriodicalLoggingData, \
+from miniapp.views.News import getNewsList, getCommitOfNews, addCommit, getNewsDetail, deleteCommit, getTopNews, \
+    searchNews, getHotSearch, getStatusOfLike, LikeOfNews
+from miniapp.views.Periodical_Logging_Data import getperiodicalLoggingDataByUserId, deletePeriodicalLoggingData, \
     addPeriodicalLoggingData
-from miniapp.views.shops import getShopList, getMyOrderList, cancelOrder, addOrder, getTopGoods, getGoodDetail, payment, \
+from miniapp.views.Shops import getShopList, getMyOrderList, cancelOrder, addOrder, getTopGoods, getGoodDetail, payment, \
     confirmOrder
 
-from miniapp.views.user import loginApi, getAddressByUsrid, addAddressByUserid, deleteAddressByUserid, editAddress, \
+from miniapp.views.User import loginApi, getAddressByUsrid, addAddressByUserid, deleteAddressByUserid, editAddress, \
     editUserInfo, getUserInfoByUserId, realnameAuthentication, getUserIntegral
 
 urlpatterns = [
@@ -73,9 +74,7 @@ urlpatterns = [
     path('getDietRecords/', getDietRecords.as_view()),
     path('addDietRecords/', addDietRecords.as_view()),
     path('deleteDietRecords/', deleteDietRecords.as_view()),
-    #     血糖目标
-    path('addBloodGlucoseTargetValue/', addBloodGlucoseTargetValue.as_view()),
-    path('getBloodGlucoseTargetValue/', getBloodGlucoseTargetValue.as_view()),
+
     # 积分记录
     path('getIntegralHistory/', getIntegralHistory.as_view()),
     path('getUserIntegral/', getUserIntegral.as_view()),
@@ -100,11 +99,19 @@ urlpatterns = [
     path('getTopNews/', getTopNews.as_view()),
     path('searchNews/', searchNews.as_view()),
     path('getHotSearch/', getHotSearch.as_view()),
+    path('getStatusOfLike/',getStatusOfLike.as_view()),
+    path('LikeOfNews/',LikeOfNews.as_view()),
     #     运动记录
     path('addSportsRecords/', addSportsRecords.as_view()),
     path('getSportsRecordsByid/', getSportsRecordsByid.as_view()),
     path('deleteSportsRecordsByid/', deleteSportsRecordsByid.as_view()),
     path('dailySportList/', dailySportList.as_view()),
     path('getsportsType/', getsportsType.as_view()),
-
+    #     目标
+    path('addBloodGlucoseTargetValue/', addBloodGlucoseTargetValue.as_view()),
+    path('getBloodGlucoseTargetValue/', getBloodGlucoseTargetValue.as_view()),
+    path('addSportTargetValue/', addSportTargetValue.as_view()),
+    path('getSportTargetValue/', getSportTargetValue.as_view()),
+    path('addFoodTargetValue/', addFoodTargetValue.as_view()),
+    path('getFoodTargetValue/', getFoodTargetValue.as_view())
 ]

@@ -12,16 +12,16 @@ from application.settings import BASE_DIR
 
 # 使用mysql时，改为此配置
 DATABASE_ENGINE = "django.db.backends.mysql"
-DATABASE_NAME = 'tangkangtest2'  # mysql 时使用
+DATABASE_NAME = 'tk1027'  # mysql 时使用
 
 # 数据库地址 改为自己数据库地址
 DATABASE_HOST = "127.0.0.1"
 # # 数据库端口
 DATABASE_PORT = 3306
 # # 数据库用户名
-DATABASE_USER = "tangkangtest2"
+DATABASE_USER = "tk1027"
 # # 数据库密码
-DATABASE_PASSWORD = "123456"
+DATABASE_PASSWORD = "tk1027"
 
 # 表前缀
 TABLE_PREFIX = "dvadmin_"
