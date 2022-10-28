@@ -92,16 +92,23 @@ class miniappUser(models.Model):
 class bloodGlucoseTargetValue(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
-    bloodSugar0_targetValue = models.FloatField(verbose_name="空腹血糖目标值")
-    bloodSugar1_targetValue = models.FloatField(verbose_name="早餐后2小时血糖目标值")
-    bloodSugar2_targetValue = models.FloatField(verbose_name="午餐前血糖目标值")
-    bloodSugar3_targetValue = models.FloatField(verbose_name="午餐后2小时血糖目标值")
-    bloodSugar4_targetValue = models.FloatField(verbose_name="晚餐前血糖目标值")
-    bloodSugar5_targetValue = models.FloatField(verbose_name="晚餐后2小时血糖目标值")
-    bloodSugar6_targetValue = models.FloatField(verbose_name="睡前血糖目标值")
-    bloodSugar7_targetValue = models.FloatField(verbose_name="任意时间血糖目标值")
-    bloodSugar8_targetValue = models.FloatField(verbose_name="夜间2时血糖目标值")
-    bloodSugar9_targetValue = models.FloatField(verbose_name="其他血糖目标值")
+    bloodSugar0_targetValue = models.JSONField(verbose_name="空腹血糖目标值", max_length=50, default='', null=True, blank=True)
+    bloodSugar1_targetValue = models.JSONField(verbose_name="早餐后2小时血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar2_targetValue = models.JSONField(verbose_name="午餐前血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar3_targetValue = models.JSONField(verbose_name="午餐后2小时血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar4_targetValue = models.JSONField(verbose_name="晚餐前血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar5_targetValue = models.JSONField(verbose_name="晚餐后2小时血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar6_targetValue = models.JSONField(verbose_name="睡前血糖目标值", max_length=50, default='', null=True, blank=True)
+    bloodSugar7_targetValue = models.JSONField(verbose_name="任意时间血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar8_targetValue = models.JSONField(verbose_name="夜间2时血糖目标值", max_length=50, default='', null=True,
+                                               blank=True)
+    bloodSugar9_targetValue = models.JSONField(verbose_name="其他目标值", max_length=50, default='', null=True, blank=True)
     createDate = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     updateDate = models.DateTimeField(verbose_name="更新时间", auto_now=True)
 
@@ -215,6 +222,7 @@ class dietRecords(models.Model):
         db_table = daName + "dietRecords"
         verbose_name = "饮食记录"
         verbose_name_plural = verbose_name
+
 
 #     饮食目标
 class dietTargetValue(models.Model):
@@ -331,11 +339,13 @@ class news(models.Model):
     is_delete = models.BooleanField(u'是否删除', default=False)
     top = models.BooleanField(u'是否置顶', default=False)
     cover = models.CharField(null=True, blank=True, verbose_name='封面', max_length=200)
+    Number_of_likes = models.IntegerField(u'点赞数', default=0)
 
     class Meta:
         db_table = daName + "news"
         verbose_name = "资讯"
         verbose_name_plural = verbose_name
+
 
 class likesOfNews(models.Model):
     id = models.AutoField(primary_key=True)
@@ -347,6 +357,8 @@ class likesOfNews(models.Model):
         db_table = daName + "likesOfNews"
         verbose_name = "资讯点赞"
         verbose_name_plural = verbose_name
+
+
 class commitOfNews(models.Model):
     id = models.AutoField(primary_key=True)
     news = models.ForeignKey(news, on_delete=models.CASCADE)
@@ -395,3 +407,5 @@ class hotSearch(models.Model):
         db_table = daName + "hotSearch"
         verbose_name = "热搜"
         verbose_name_plural = verbose_name
+
+

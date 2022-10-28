@@ -210,6 +210,11 @@ class newsModelCreateUpdateSerializer(CustomModelSerializer):
 
 
 class newsserializer(serializers.ModelSerializer):
+    Number_of_likes = serializers.SerializerMethodField()
+
+    def get_Number_of_likes(self, obj):
+        return len(likesOfNews.objects.filter(news=obj).all())
+
     class Meta:
         model = news
         fields = '__all__'

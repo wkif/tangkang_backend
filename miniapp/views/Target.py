@@ -18,16 +18,17 @@ class addBloodGlucoseTargetValue(APIView):
             res['status'] = 400
             return JsonResponse(res)
 
-        bloodSugar0_targetValue = request.data.get('bloodSugar0_targetValue')
-        bloodSugar1_targetValue = request.data.get('bloodSugar1_targetValue')
-        bloodSugar2_targetValue = request.data.get('bloodSugar2_targetValue')
-        bloodSugar3_targetValue = request.data.get('bloodSugar3_targetValue')
-        bloodSugar4_targetValue = request.data.get('bloodSugar4_targetValue')
-        bloodSugar5_targetValue = request.data.get('bloodSugar5_targetValue')
-        bloodSugar6_targetValue = request.data.get('bloodSugar6_targetValue')
-        bloodSugar7_targetValue = request.data.get('bloodSugar7_targetValue')
-        bloodSugar8_targetValue = request.data.get('bloodSugar8_targetValue')
-        bloodSugar9_targetValue = request.data.get('bloodSugar9_targetValue')
+        bloodSugar0_targetValue =request.data.get('bloodSugar0_targetValue')
+        print(bloodSugar0_targetValue)
+        bloodSugar1_targetValue = (request.data.get('bloodSugar1_targetValue'))
+        bloodSugar2_targetValue = (request.data.get('bloodSugar2_targetValue'))
+        bloodSugar3_targetValue = (request.data.get('bloodSugar3_targetValue'))
+        bloodSugar4_targetValue = (request.data.get('bloodSugar4_targetValue'))
+        bloodSugar5_targetValue = (request.data.get('bloodSugar5_targetValue'))
+        bloodSugar6_targetValue = (request.data.get('bloodSugar6_targetValue'))
+        bloodSugar7_targetValue = (request.data.get('bloodSugar7_targetValue'))
+        bloodSugar8_targetValue = (request.data.get('bloodSugar8_targetValue'))
+        bloodSugar9_targetValue = (request.data.get('bloodSugar9_targetValue'))
         if not bloodSugar0_targetValue and not bloodSugar1_targetValue and not bloodSugar2_targetValue and not bloodSugar3_targetValue and not bloodSugar4_targetValue and not bloodSugar5_targetValue and not bloodSugar6_targetValue and not bloodSugar7_targetValue and not bloodSugar8_targetValue and not bloodSugar9_targetValue:
             res['data'] = '请输入目标值'
             res['status'] = 400
@@ -77,8 +78,65 @@ class getBloodGlucoseTargetValue(APIView):
             return JsonResponse(res)
         targetValue = bloodGlucoseTargetValue.objects.filter(user=user).first()
         if not targetValue:
-            res['data'] = '数据不存在'
-            res['status'] = 400
+            res['data'] = {
+                # 'targetValue': {
+                #     'bloodSugar0_targetValue': targetValue.bloodSugar0_targetValue,
+                #     'bloodSugar1_targetValue': targetValue.bloodSugar1_targetValue,
+                #     'bloodSugar2_targetValue': targetValue.bloodSugar2_targetValue,
+                #     'bloodSugar3_targetValue': targetValue.bloodSugar3_targetValue,
+                #     'bloodSugar4_targetValue': targetValue.bloodSugar4_targetValue,
+                #     'bloodSugar5_targetValue': targetValue.bloodSugar5_targetValue,
+                #     'bloodSugar6_targetValue': targetValue.bloodSugar6_targetValue,
+                #     'bloodSugar7_targetValue': targetValue.bloodSugar7_targetValue,
+                #     'bloodSugar8_targetValue': targetValue.bloodSugar8_targetValue,
+                #     'bloodSugar9_targetValue': targetValue.bloodSugar9_targetValue,
+                # },
+                "targetValue": [
+                    {
+                        "name": '空腹血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '早餐后2小时血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '午餐前血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '午餐后2小时血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '晚餐前血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '晚餐后2小时血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '睡前血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '任意时间血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '夜间2时血糖',
+                        "value": []
+                    },
+                    {
+                        "name": '其他',
+                        "value": []
+                    }
+                ],
+                'createTime': '',
+                'updateTime': '',
+            }
+            res['status'] = 200
             return JsonResponse(res)
         else:
             res['data'] = {
