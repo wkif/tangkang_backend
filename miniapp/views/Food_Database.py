@@ -123,7 +123,7 @@ class addDietRecords(APIView):
             return JsonResponse(res)
         time = request.data.get('time')
         food = request.data.get('food')
-        foodCalory = request.data.get('foodCalory')
+        # foodCalory = request.data.get('foodCalory')
         foodProtein = request.data.get('foodProtein')
         foodFat = request.data.get('foodFat')
         foodCarbohydrate = request.data.get('foodCarbohydrate')
@@ -138,7 +138,7 @@ class addDietRecords(APIView):
             res['data'] = '该数据已经存在'
             res['status'] = 400
             return JsonResponse(res)
-        dietRecords.objects.create(user=user, time=time, food=food, foodCalory=foodCalory, foodProtein=foodProtein,
+        dietRecords.objects.create(user=user, time=time, food=food,  foodProtein=foodProtein,
                                    foodFat=foodFat, foodCarbohydrate=foodCarbohydrate, foodVitaminA=foodVitaminA,
                                    foodVitaminC=foodVitaminC, foodVitaminE=foodVitaminE, foodVitaminD=foodVitaminD,
                                    heat=heat)

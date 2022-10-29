@@ -13,6 +13,7 @@ from dvadmin.system.views.admin.operation_log import OperationLogViewSet
 from dvadmin.system.views.admin.role import RoleViewSet
 from dvadmin.system.views.admin.system_config import SystemConfigViewSet
 from dvadmin.system.views.admin.user import UserViewSet
+from dvadmin.system.views.miniapp.Association import AssociationModelViewset
 from dvadmin.system.views.miniapp.commitOfNews import commitOfNewsModelViewset
 from dvadmin.system.views.miniapp.sportsRecords import sportsRecordsModelViewset
 from dvadmin.system.views.miniapp.sportsType import sportsTypeModelViewset
@@ -56,6 +57,8 @@ system_url.register(r'newsCommit', commitOfNewsModelViewset)
 system_url.register(r'tabList', tabListModelViewset)
 system_url.register(r'sportsType', sportsTypeModelViewset)
 system_url.register(r'sportsRecords', sportsRecordsModelViewset)
+system_url.register(r'Association', AssociationModelViewset)
+
 
 urlpatterns = [
     path('user/export/', UserViewSet.as_view({'post': 'export_data', })),

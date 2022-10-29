@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.urls import path
 
+from miniapp.views.Association import createAssociation, searchUserForAssociation, getMyAssociation, Audit, \
+    getHealthHistory
 from miniapp.views.BloodSugarData import getBloodSugarDataByUserId, addBloodSugarData, deleteBloodSugarData, \
     getLastBloodSugarDataByUserId
 from miniapp.views.Integral import getIntegralHistory
@@ -99,8 +101,8 @@ urlpatterns = [
     path('getTopNews/', getTopNews.as_view()),
     path('searchNews/', searchNews.as_view()),
     path('getHotSearch/', getHotSearch.as_view()),
-    path('getStatusOfLike/',getStatusOfLike.as_view()),
-    path('LikeOfNews/',LikeOfNews.as_view()),
+    path('getStatusOfLike/', getStatusOfLike.as_view()),
+    path('LikeOfNews/', LikeOfNews.as_view()),
     #     运动记录
     path('addSportsRecords/', addSportsRecords.as_view()),
     path('getSportsRecordsByid/', getSportsRecordsByid.as_view()),
@@ -113,5 +115,13 @@ urlpatterns = [
     path('addSportTargetValue/', addSportTargetValue.as_view()),
     path('getSportTargetValue/', getSportTargetValue.as_view()),
     path('addFoodTargetValue/', addFoodTargetValue.as_view()),
-    path('getFoodTargetValue/', getFoodTargetValue.as_view())
+    path('getFoodTargetValue/', getFoodTargetValue.as_view()),
+
+    #     关联
+    path('createAssociation/', createAssociation.as_view()),
+    path('searchUserForAssociation/', searchUserForAssociation.as_view()),
+    path('getMyAssociation/', getMyAssociation.as_view()),
+    path('Audit/', Audit.as_view()),
+    path('getHealthHistory/', getHealthHistory.as_view()),
+
 ]

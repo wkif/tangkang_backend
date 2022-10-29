@@ -451,3 +451,73 @@ class sportsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = sportsType
         fields = '__all__'
+
+
+# 关联
+class AssociationModelserializers(CustomModelSerializer):
+    userA = serializers.SerializerMethodField()
+    userB = serializers.SerializerMethodField()
+    createUser = serializers.SerializerMethodField()
+
+    def get_userA(self, obj):
+        return {
+            'id': obj.userA.id,
+            'avatar': obj.userA.avatar,
+            'gender': obj.userA.gender,
+            "username": obj.userA.username,
+        }
+
+    def get_userB(self, obj):
+        return {
+            'id': obj.userB.id,
+            'avatar': obj.userB.avatar,
+            'gender': obj.userB.gender,
+            "username": obj.userB.username,
+        }
+
+    def get_createUser(self, obj):
+        return {
+            'id': obj.createUser.id,
+            'avatar': obj.createUser.avatar,
+            'gender': obj.createUser.gender,
+            "username": obj.createUser.username,
+        }
+
+    class Meta:
+        model = Association
+        fields = '__all__'
+
+
+class AssociationModelCreateUpdateSerializer(CustomModelSerializer):
+    """
+    创建/更新时的列化器
+    """
+
+    class Meta:
+        model = Association
+        fields = '__all__'
+
+
+class Associationserializer(serializers.ModelSerializer):
+    userA = serializers.SerializerMethodField()
+    userB = serializers.SerializerMethodField()
+
+    def get_userA(self, obj):
+        return {
+            'id': obj.userA.id,
+            'avatar': obj.userA.avatar,
+            'gender': obj.userA.gender,
+            "username": obj.userA.username,
+        }
+
+    def get_userB(self, obj):
+        return {
+            'id': obj.userB.id,
+            'avatar': obj.userB.avatar,
+            'gender': obj.userB.gender,
+            "username": obj.userB.username,
+        }
+
+    class Meta:
+        model = Association
+        fields = '__all__'

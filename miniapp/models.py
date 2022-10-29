@@ -186,7 +186,7 @@ class foodDatabase(models.Model):
         choices=foodType_CHOICES, default=0, verbose_name="食物类型", null=True, blank=True, help_text="食物类型"
     )
     unit = models.CharField(u'单位', max_length=50, default='', null=True, blank=True)
-    foodCalory = models.FloatField(u'卡路里', default=0)
+    # foodCalory = models.FloatField(u'卡路里', default=0)
     foodProtein = models.FloatField(u'蛋白质', default=0)
     foodFat = models.FloatField(u'脂肪', default=0)
     foodCarbohydrate = models.FloatField(u'碳水化合物', default=0)
@@ -208,7 +208,7 @@ class dietRecords(models.Model):
     user = models.ForeignKey(miniappUser, on_delete=models.CASCADE)
     time = models.DateTimeField(u'日期', null=True, blank=True)
     food = models.JSONField(u'食物', default='', null=True, blank=True)
-    foodCalory = models.FloatField(u'卡路里', default=0)
+    # foodCalory = models.FloatField(u'卡路里', default=0)
     foodProtein = models.FloatField(u'蛋白质', default=0)
     foodFat = models.FloatField(u'脂肪', default=0)
     foodCarbohydrate = models.FloatField(u'碳水化合物', default=0)
@@ -409,3 +409,16 @@ class hotSearch(models.Model):
         verbose_name_plural = verbose_name
 
 
+class Association(models.Model):
+    id = models.AutoField(primary_key=True)
+    userA = models.ForeignKey(miniappUser, related_name='userA', verbose_name='用户A', on_delete=models.CASCADE)
+    userB = models.ForeignKey(miniappUser, related_name='userB', verbose_name='用户B', on_delete=models.CASCADE)
+    createUser = models.ForeignKey(miniappUser, related_name='createUser', verbose_name='创建用户',
+                                   on_delete=models.CASCADE)
+    time = models.DateTimeField(u'时间', auto_now_add=True)
+    is_active = models.BooleanField(u'是否绑定', default=False)
+
+    class Meta:
+        db_table = daName + "Association"
+        verbose_name = "关联"
+        verbose_name_plural = verbose_name
