@@ -5,6 +5,8 @@ from miniapp.models import *
 from miniapp.serializers import foodDatabaseSerializer, dietRecordsSerializer
 
 # 食品数据库--------------------------------------------------------start
+from miniapp.views.BloodSugarData import addIntegralHistory
+
 
 class getfoodDatabaseByname(APIView):
     authentication_classes = (authentication.JWTAuthentication,)
@@ -138,10 +140,21 @@ class addDietRecords(APIView):
             res['data'] = '该数据已经存在'
             res['status'] = 400
             return JsonResponse(res)
-        dietRecords.objects.create(user=user, time=time, food=food,  foodProtein=foodProtein,
+        status = 0
+        dietTargetValueC = dietTargetValue.objects.filter(user=user).first()
+        if dietTargetValueC:
+            heatT = dietTargetValueC.heat
+            if heat < heatT:
+                IntegralDetailT = IntegralDetail.objects.filter(name="饮食热量达标").first()
+                if IntegralDetailT:
+                    user.integral += IntegralDetailT.integral
+                    user.save()
+                    addIntegralHistory(user, IntegralDetailT)
+                status = 1
+        dietRecords.objects.create(user=user, time=time, food=food, foodProtein=foodProtein,
                                    foodFat=foodFat, foodCarbohydrate=foodCarbohydrate, foodVitaminA=foodVitaminA,
                                    foodVitaminC=foodVitaminC, foodVitaminE=foodVitaminE, foodVitaminD=foodVitaminD,
-                                   heat=heat)
+                                   heat=heat, status=status)
         res['data'] = '添加成功'
         res['status'] = 200
         return JsonResponse(res)
@@ -169,6 +182,5 @@ class deleteDietRecords(APIView):
             res['data'] = '删除成功'
             res['status'] = 200
             return JsonResponse(res)
-
 
 # 食品数据库--------------------------------------------------------end

@@ -46,6 +46,8 @@ class addPeriodicalLoggingData(APIView):
             res['data'] = '请填写完整信息'
             res['status'] = 400
             return JsonResponse(res)
+
+
         periodicalLogging.objects.create(user=user, periodicalTime=periodicalTime,
                                          glycosylatedHemoglobin=glycosylatedHemoglobin,
                                          microalbuminuria=microalbuminuria, dorsalisPedisArtery=dorsalisPedisArtery)

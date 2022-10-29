@@ -26,5 +26,9 @@
   {
     "name": "商品消费",
     "integral": 0
+  },
+  {
+    "name": "饮食热量达标",
+    "integral": 0
   }
 ]

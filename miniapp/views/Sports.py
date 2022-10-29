@@ -4,16 +4,10 @@ from rest_framework.views import APIView
 from miniapp.models import *
 from miniapp.serializers import sportsRecordsSerializer, sportsTypeSerializer
 
-
-
-
-
-
-
-
-
-
 # 运动记录
+from miniapp.views.BloodSugarData import addIntegralHistory
+
+
 class addSportsRecords(APIView):
     # authentication_classes = (authentication.JWTAuthentication,)
 
@@ -38,10 +32,22 @@ class addSportsRecords(APIView):
         startTime = datetime.datetime.strptime(startTime, '%Y-%m-%d %H:%M:%S')
         endTime = datetime.datetime.strptime(endTime, '%Y-%m-%d %H:%M:%S')
         total_seconds = (endTime - startTime).total_seconds()
-        mins = round(total_seconds / 60,2)
+        mins = round(total_seconds / 60, 2)
         print(mins)
-        heat = type.heat * mins
-        sportsRecords.objects.create(user=user, startTime=startTime, endTime=endTime, sportstype=type, heat=heat)
+        heat = round(type.heat * mins, 2)
+        status = 0
+        sportTargetValueC = sportTargetValue.objects.filter(user=user).first()
+        if sportTargetValueC:
+            heatT = sportTargetValueC.heat
+            if heatT < heat:
+                IntegralDetailT = IntegralDetail.objects.filter(name="每日运动量达标").first()
+                if IntegralDetailT:
+                    user.integral += IntegralDetailT.integral
+                    user.save()
+                    addIntegralHistory(user, IntegralDetailT)
+                status = 1
+        sportsRecords.objects.create(user=user, startTime=startTime, endTime=endTime, sportstype=type, heat=heat,
+                                     status=status)
         res['data'] = '记录成功'
         res['status'] = 200
         return JsonResponse(res)
@@ -99,7 +105,6 @@ class dailySportList(APIView):
     def get(self, request):
         res = {}
         data = []
-
         startdate = datetime.date(
             datetime.datetime.now().year,
             datetime.datetime.now().month,

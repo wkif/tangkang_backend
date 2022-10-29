@@ -47,7 +47,7 @@ ALLOWED_HOSTS = ["*"]
 
 # ================================================= #
 # 七牛云
-QN_BASE_DIR = 'http://tkimg.kifroom.icu/'
+QN_BASE_DIR = 'http://tkimg.tkyd.shop/'
 AccessKey = 'IxZrTCrRIaascxiWnKKJIEXOPH72Ka0fYypLtn-D'
 SecretKey = 'CNqVZ-sJ1Zv2WKqxWDRM9UubbsYG3T_UUwVq9nK8'
 bucked_name='tangkangyoudao'

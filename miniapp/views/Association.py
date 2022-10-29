@@ -13,6 +13,7 @@ from rest_framework_simplejwt import authentication
 from miniapp.models import *
 from miniapp.serializers import miniappUserModelserializers, Associationserializer, bloodSugarSerializer, \
     periodicalLoggingSerializer, dietRecordsSerializer, sportsRecordsSerializer
+from miniapp.views.BloodSugarData import addIntegralHistory
 
 
 class createAssociation(APIView):
@@ -64,6 +65,18 @@ class Audit(APIView):
         else:
             As.is_active = True
             As.save()
+            tarObj = IntegralDetail.objects.filter(name='绑定监护人').first()
+            if tarObj:
+                As.userA.integral += tarObj.integral
+                As.userA.save()
+                As.userB.integral += tarObj.integral
+                As.userB.save()
+                addIntegralHistory(As.userA, tarObj)
+                addIntegralHistory(As.userB, tarObj)
+            else:
+                res['data'] = '联系客服设置积分值'
+                res['status'] = 400
+                return JsonResponse(res)
             res['data'] = '已关联'
             res['status'] = 200
             return JsonResponse(res)

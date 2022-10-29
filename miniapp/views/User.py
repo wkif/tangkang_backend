@@ -9,6 +9,7 @@ from miniapp.models import *
 from miniapp.serializers import userserializer, addressSerializer, JfwTokenObtainPairSerializer
 from miniapp.utils.checkIdnum import check_id_data
 from miniapp.utils.wxlogin import get_login_info
+from miniapp.views.BloodSugarData import addIntegralHistory
 
 
 class loginApi(APIView):
@@ -33,6 +34,15 @@ class loginApi(APIView):
                     u1 = miniappUser.objects.filter(inviteCode=inviteCode, is_active=True).first()
                     if u1:
                         u1.numberofPersonsInvited += 1
+                        tarObj = IntegralDetail.objects.filter(name='邀请用户').first()
+                        if tarObj:
+                            u1.integral += tarObj.integral
+                            u1.save()
+                            addIntegralHistory(u1, tarObj)
+                        else:
+                            res['data'] = '联系客服设置积分值'
+                            res['status'] = 400
+                            return JsonResponse(res)
                 miniappUser.objects.update()
                 re = userserializer(a)
                 res['data'] = re.data

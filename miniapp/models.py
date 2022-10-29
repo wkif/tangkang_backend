@@ -217,6 +217,12 @@ class dietRecords(models.Model):
     foodVitaminE = models.FloatField(u'维生素E', default=0)
     foodVitaminD = models.FloatField(u'维生素D', default=0)
     heat = models.FloatField(u'热量', default=0)
+    STATUS_CHOICES = (
+        (0, "不达标"),
+        (1, "达标"),
+    )
+    status = models.IntegerField(u'状态', choices=STATUS_CHOICES, default=0, help_text="状态")
+
 
     class Meta:
         db_table = daName + "dietRecords"
@@ -253,6 +259,12 @@ class sportsRecords(models.Model):
     time = models.DateTimeField('记录日期', auto_now_add=True)
     sportstype = models.ForeignKey(sportsType, on_delete=models.CASCADE)
     heat = models.FloatField(u'热量', default=0)
+    STATUS_CHOICES = (
+        (0, "不达标"),
+        (1, "达标"),
+    )
+    status = models.IntegerField(u'状态', choices=STATUS_CHOICES, default=0, help_text="状态")
+
 
 
 #     运动目标

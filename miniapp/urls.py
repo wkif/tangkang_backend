@@ -72,7 +72,6 @@ urlpatterns = [
     #     食物数据库
     path('getfoodDatabase/', getfoodDatabase.as_view()),
     path('getfoodDatabaseByname/', getfoodDatabaseByname.as_view()),
-
     path('getDietRecords/', getDietRecords.as_view()),
     path('addDietRecords/', addDietRecords.as_view()),
     path('deleteDietRecords/', deleteDietRecords.as_view()),

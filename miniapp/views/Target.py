@@ -18,7 +18,7 @@ class addBloodGlucoseTargetValue(APIView):
             res['status'] = 400
             return JsonResponse(res)
 
-        bloodSugar0_targetValue =request.data.get('bloodSugar0_targetValue')
+        bloodSugar0_targetValue = request.data.get('bloodSugar0_targetValue')
         print(bloodSugar0_targetValue)
         bloodSugar1_targetValue = (request.data.get('bloodSugar1_targetValue'))
         bloodSugar2_targetValue = (request.data.get('bloodSugar2_targetValue'))
@@ -139,6 +139,7 @@ class getBloodGlucoseTargetValue(APIView):
             res['status'] = 200
             return JsonResponse(res)
         else:
+            print(type(targetValue.bloodSugar0_targetValue))
             res['data'] = {
                 # 'targetValue': {
                 #     'bloodSugar0_targetValue': targetValue.bloodSugar0_targetValue,
@@ -152,46 +153,47 @@ class getBloodGlucoseTargetValue(APIView):
                 #     'bloodSugar8_targetValue': targetValue.bloodSugar8_targetValue,
                 #     'bloodSugar9_targetValue': targetValue.bloodSugar9_targetValue,
                 # },
+
                 "targetValue": [
                     {
                         "name": '空腹血糖',
-                        "value": targetValue.bloodSugar0_targetValue
+                        "value": (targetValue.bloodSugar0_targetValue)
                     },
                     {
                         "name": '早餐后2小时血糖',
-                        "value": targetValue.bloodSugar1_targetValue
+                        "value": (targetValue.bloodSugar1_targetValue)
                     },
                     {
                         "name": '午餐前血糖',
-                        "value": targetValue.bloodSugar2_targetValue
+                        "value": (targetValue.bloodSugar2_targetValue)
                     },
                     {
                         "name": '午餐后2小时血糖',
-                        "value": targetValue.bloodSugar3_targetValue
+                        "value": (targetValue.bloodSugar3_targetValue)
                     },
                     {
                         "name": '晚餐前血糖',
-                        "value": targetValue.bloodSugar4_targetValue
+                        "value": (targetValue.bloodSugar4_targetValue)
                     },
                     {
                         "name": '晚餐后2小时血糖',
-                        "value": targetValue.bloodSugar5_targetValue
+                        "value": (targetValue.bloodSugar5_targetValue)
                     },
                     {
                         "name": '睡前血糖',
-                        "value": targetValue.bloodSugar6_targetValue
+                        "value": (targetValue.bloodSugar6_targetValue)
                     },
                     {
                         "name": '任意时间血糖',
-                        "value": targetValue.bloodSugar7_targetValue
+                        "value": (targetValue.bloodSugar7_targetValue)
                     },
                     {
                         "name": '夜间2时血糖',
-                        "value": targetValue.bloodSugar8_targetValue
+                        "value": (targetValue.bloodSugar8_targetValue)
                     },
                     {
                         "name": '其他',
-                        "value": targetValue.bloodSugar9_targetValue
+                        "value": (targetValue.bloodSugar9_targetValue)
                     }
                 ],
                 'createTime': targetValue.createDate.strftime('%Y-%m-%d %H:%M:%S'),

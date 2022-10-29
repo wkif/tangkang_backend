@@ -131,15 +131,22 @@ class addBloodSugarData(APIView):
                 status = 1
             else:
                 key = 'bloodSugar' + str(bloodSugarType) + '_targetValue'
-                targetVlaue = targetValueData.__dict__[key]
-                if int(float(bloodSugarLevel)) > int(targetVlaue):
+                targetVlaue = eval(targetValueData.__dict__[key])
+                print(targetVlaue)
+                if (float(bloodSugarLevel)) < float(targetVlaue[0]) or (float(bloodSugarLevel)) > float(
+                        targetVlaue[1]):
                     status = 0
                 else:
                     status = 1
-                    tarObj = IntegralDetail.objects.filter(id=2).first()
-                    user.integral += tarObj.integral
-                    user.save()
-                    addIntegralHistory(user, tarObj)
+                    tarObj = IntegralDetail.objects.filter(name='血糖值日记录达标').first()
+                    if tarObj:
+                        user.integral += tarObj.integral
+                        user.save()
+                        addIntegralHistory(user, tarObj)
+                    else:
+                        res['data'] = '联系客服设置积分值'
+                        res['status'] = 400
+                        return JsonResponse(res)
             bloodSugarLevels.objects.create(user=user, bloodSugarLevel=bloodSugarLevel, bloodSugarTime=bloodSugarTime,
                                             bloodSugarType=bloodSugarType, status=status)
             res['data'] = '添加成功'
