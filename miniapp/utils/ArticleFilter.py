@@ -52,6 +52,7 @@ class ArticleFilter(object):
             # 判断敏感词是否在文章中
             if words in string:
                 # 如果在则用*替换(几个字替换几个*)
+                print(words)
                 new_string = string.replace(words, "*" * len(words))
                 self.flag = True
         # 当替换好的文章(字符串)与被替换的文章(字符串)相同时,结束递归,返回替换好的文章(字符串)
@@ -67,3 +68,4 @@ class ArticleFilter(object):
 def filter_replace(string):
     run = ArticleFilter()
     return run.filter_replace(string)
+filter_replace('0ni9o1s3feu60.cn')

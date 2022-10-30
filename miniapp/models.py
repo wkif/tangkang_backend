@@ -78,6 +78,7 @@ class miniappUser(models.Model):
     numberofPersonsInvited = models.IntegerField(u'邀请人数', default=0)
     speed = models.BooleanField(u'是否语音播报', default=False)
     integral = models.IntegerField(u'积分', default=0)
+    Number_of_violations = models.IntegerField(u'违规次数', default=0)
 
     def set_password(self, raw_password):
         super().set_password(hashlib.md5(raw_password.encode(encoding="UTF-8")).hexdigest())
@@ -223,7 +224,6 @@ class dietRecords(models.Model):
     )
     status = models.IntegerField(u'状态', choices=STATUS_CHOICES, default=0, help_text="状态")
 
-
     class Meta:
         db_table = daName + "dietRecords"
         verbose_name = "饮食记录"
@@ -264,7 +264,6 @@ class sportsRecords(models.Model):
         (1, "达标"),
     )
     status = models.IntegerField(u'状态', choices=STATUS_CHOICES, default=0, help_text="状态")
-
 
 
 #     运动目标

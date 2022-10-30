@@ -172,13 +172,19 @@ class addCommit(APIView):
         filter = filter_replace(content)
         print(filter)
         if filter['Forbidden']:
+            user.Number_of_violations += 1
+            user.save()
+            if user.Number_of_violations >= 5:
+                res['data'] = '违规发言已经超过5次，禁止评论'
+                res['status'] = 400
+                return JsonResponse(res)
             content = filter['str']
         hasC = commitOfNews.objects.filter(user=user, news=new).all().order_by('-time')
         if hasC:
             Time = hasC[0].time
             # 距离当前时间的时间间隔
             timeGap = (datetime.datetime.now() - Time).seconds
-            if timeGap < 60:
+            if timeGap < 30:
                 res['data'] = '评论过于频繁'
                 res['status'] = 400
                 return JsonResponse(res)
@@ -186,6 +192,10 @@ class addCommit(APIView):
         commit = commitOfNews.objects.create(news=new, user=user, content=content)
         if not commit:
             res['data'] = '添加失败'
+            res['status'] = 400
+            return JsonResponse(res)
+        elif filter['Forbidden']:
+            res['data'] = '内容含有敏感词，多次发送会被禁止评论！'
             res['status'] = 400
             return JsonResponse(res)
         else:
