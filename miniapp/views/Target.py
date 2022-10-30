@@ -12,7 +12,7 @@ class addBloodGlucoseTargetValue(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -71,7 +71,7 @@ class getBloodGlucoseTargetValue(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -209,7 +209,7 @@ class addSportTargetValue(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -239,7 +239,7 @@ class getSportTargetValue(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -264,7 +264,7 @@ class addFoodTargetValue(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -294,7 +294,7 @@ class getFoodTargetValue(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400

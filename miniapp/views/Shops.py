@@ -64,7 +64,7 @@ class getGoodDetail(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -111,7 +111,7 @@ class addOrder(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -123,7 +123,7 @@ class addOrder(APIView):
             res['status'] = 400
             return JsonResponse(res)
         goodId = request.data.get('goodId')
-        good = SKU.objects.filter(id=goodId).first()
+        good = SKU.objects.filter(id=goodId,status=1).first()
         if not good:
             res['data'] = '商品不存在'
             res['status'] = 400
@@ -149,7 +149,7 @@ class payment(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -196,7 +196,7 @@ class cancelOrder(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -222,7 +222,7 @@ class getMyOrderList(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -275,7 +275,7 @@ class confirmOrder(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId,is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400

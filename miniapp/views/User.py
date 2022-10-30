@@ -75,7 +75,7 @@ class getUserIntegral(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -92,7 +92,7 @@ class getAddressByUsrid(GenericAPIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -115,7 +115,7 @@ class addAddressByUserid(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -163,7 +163,7 @@ class editAddress(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -217,7 +217,7 @@ class deleteAddressByUserid(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -248,7 +248,7 @@ class editUserInfo(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -286,7 +286,7 @@ class getUserInfoByUserId(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -302,7 +302,7 @@ class realnameAuthentication(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400

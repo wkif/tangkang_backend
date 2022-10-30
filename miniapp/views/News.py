@@ -2,11 +2,15 @@ import datetime
 import re
 from django.http import JsonResponse
 from rest_framework.views import APIView
+from rest_framework_simplejwt import authentication
+
 from miniapp.models import *
 from miniapp.serializers import newsserializer, commitOfNewsserializer
 
-
 # 资讯-------------------------------------------------
+from miniapp.utils.ArticleFilter import filter_replace
+
+
 class getNewsList(APIView):
     # authentication_classes = (authentication.JWTAuthentication,)
 
@@ -14,7 +18,7 @@ class getNewsList(APIView):
 
     def get(self, request):
         res = {}
-        newsList = news.objects.all().order_by('-updateTime')
+        newsList = news.objects.filter(is_delete=False).order_by('-updateTime')
         if not newsList:
             res['data'] = '数据不存在'
             res['status'] = 400
@@ -54,6 +58,8 @@ class getTopNews(APIView):
 
 
 class searchNews(APIView):
+    authentication_classes = ()
+
     def post(self, request):
         res = {}
         newsname = request.data.get('newsname')
@@ -103,9 +109,7 @@ class getHotSearch(APIView):
 
 
 class getNewsDetail(APIView):
-    # authentication_classes = (authentication.JWTAuthentication,)
-
-    authentication_classes = ()
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def post(self, request):
         res = {}
@@ -124,20 +128,18 @@ class getNewsDetail(APIView):
 
 
 class getCommitOfNews(APIView):
-    # authentication_classes = (authentication.JWTAuthentication,)
-
-    authentication_classes = ()
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
             return JsonResponse(res)
         newsId = request.data.get('newsId')
-        new = news.objects.filter(id=newsId).first()
+        new = news.objects.filter(id=newsId, is_delete=False).first()
         if not new:
             res['data'] = '数据不存在'
             res['status'] = 400
@@ -150,14 +152,12 @@ class getCommitOfNews(APIView):
 
 
 class addCommit(APIView):
-    # authentication_classes = (authentication.JWTAuthentication,)
-
-    authentication_classes = ()
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -169,6 +169,10 @@ class addCommit(APIView):
             res['status'] = 400
             return JsonResponse(res)
         content = request.data.get('content')
+        filter = filter_replace(content)
+        print(filter)
+        if filter['Forbidden']:
+            content = filter['str']
         hasC = commitOfNews.objects.filter(user=user, news=new).all().order_by('-time')
         if hasC:
             Time = hasC[0].time
@@ -191,14 +195,12 @@ class addCommit(APIView):
 
 
 class deleteCommit(APIView):
-    # authentication_classes = (authentication.JWTAuthentication,)
-
-    authentication_classes = ()
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -228,14 +230,12 @@ class deleteCommit(APIView):
 
 
 class LikeOfNews(APIView):
-    # authentication_classes = (authentication.JWTAuthentication,)
-
-    authentication_classes = ()
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -260,14 +260,12 @@ class LikeOfNews(APIView):
 
 
 class getStatusOfLike(APIView):
-    # authentication_classes = (authentication.JWTAuthentication,)
-
-    authentication_classes = ()
+    authentication_classes = (authentication.JWTAuthentication,)
 
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
