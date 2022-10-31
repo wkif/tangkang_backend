@@ -6,7 +6,6 @@ from django.db import models
 
 from application import dispatch
 from dvadmin.utils.models import CoreModel, table_prefix
-from shop.utils.upload_img import upload_img
 
 STATUS_CHOICES = (
     (0, "禁用"),
@@ -266,12 +265,6 @@ class FileList(CoreModel):
     md5sum = models.CharField(max_length=36, blank=True, verbose_name="文件md5", help_text="文件md5")
 
     def save(self, *args, **kwargs):
-        # if not self.md5sum:  # file is new
-        #     md5 = hashlib.md5()
-        #     for chunk in self.url.chunks():
-        #         md5.update(chunk)
-        #     self.md5sum = md5.hexdigest()
-        # # self.url = upload_img(self.name)
         super(FileList, self).save(*args, **kwargs)
 
     class Meta:

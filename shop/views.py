@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from rest_framework_simplejwt import authentication
 
 from shop.models import goodsCategory, Brand, SKUCommits
-from shop.utils.upload_img import upload_img
+from shop.utils.upload_file import upload_file
 
 
 class test(APIView):
@@ -30,7 +30,7 @@ class uploadImg(APIView):
     def post(self, request):
         img = request.FILES.get('img')
         img_name = request.POST.get('imgName')
-        ingUrl = upload_img(img, img_name)
+        ingUrl = upload_file(img, img_name)
         res = {
             'code': 0,
             'msg': 'ok',

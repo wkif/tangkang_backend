@@ -47,7 +47,8 @@ ALLOWED_HOSTS = ["*"]
 
 # ================================================= #
 # 七牛云
-QN_BASE_DIR = 'http://tkimg.tkyd.shop/'
+QN_BASE_DIR_img = 'https://tkimg.tkyd.shop/'
+QN_BASE_DIR_video ='https://video.tkyd.shop/'
 AccessKey = 'IxZrTCrRIaascxiWnKKJIEXOPH72Ka0fYypLtn-D'
 SecretKey = 'CNqVZ-sJ1Zv2WKqxWDRM9UubbsYG3T_UUwVq9nK8'
 bucked_name='tangkangyoudao'

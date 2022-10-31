@@ -3,15 +3,13 @@ from rest_framework import serializers
 from dvadmin.system.models import FileList
 from dvadmin.utils.serializers import CustomModelSerializer
 from dvadmin.utils.viewset import CustomModelViewSet
-from shop.utils.upload_img import upload_img
+from shop.utils.upload_file import upload_file
 
 
 class FileSerializer(CustomModelSerializer):
     url = serializers.SerializerMethodField(read_only=True)
 
     def get_url(self, instance):
-        # return 'media/' + str(instance.url)
-        print(instance.url)
         return str(instance.url)
 
     class Meta:
@@ -19,15 +17,16 @@ class FileSerializer(CustomModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        print(self.initial_data)
-        print(validated_data)
+        # print(self.initial_data)
         validated_data['name'] = str(self.initial_data.get('file'))
         # validated_data['url'] = self.initial_data.get('file')
-        validated_data['url'] = upload_img(self.request.FILES.get('file'),
-                                           str(self.initial_data.get('file')).split('.')[0])
-        print(validated_data)
-
+        validated_data['url'] = upload_file(self.request.FILES.get('file'),
+                                           str(self.initial_data.get('file')))
+        # print(validated_data)
         return super().create(validated_data)
+
+    def destroy(self, validated_data):
+        print(self.initial_data,'destroy')
 
 
 class FileViewSet(CustomModelViewSet):

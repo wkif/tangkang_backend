@@ -19,6 +19,9 @@ from dvadmin.utils.json_response import SuccessResponse, ErrorResponse, DetailRe
 from dvadmin.utils.permission import CustomPermission
 from django_restql.mixins import QueryArgumentsMixin
 
+from shop.utils.deleteFile import deleteFile
+
+
 class CustomModelViewSet(ModelViewSet,ImportSerializerMixin,ExportSerializerMixin,QueryArgumentsMixin):
     """
     自定义的ModelViewSet:
@@ -92,6 +95,8 @@ class CustomModelViewSet(ModelViewSet,ImportSerializerMixin,ExportSerializerMixi
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if '/api/system/file' in str(request):
+            res = deleteFile(instance.name)
         self.perform_destroy(instance)
         return DetailResponse(data=[], msg="删除成功")
 
