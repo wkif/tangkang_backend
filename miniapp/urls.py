@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.urls import path
 
 from miniapp.views.Association import createAssociation, searchUserForAssociation, getMyAssociation, Audit, \
-    getHealthHistory
+    getHealthHistory, cancelAssociation
 from miniapp.views.BloodSugarData import getBloodSugarDataByUserId, addBloodSugarData, deleteBloodSugarData, \
     getLastBloodSugarDataByUserId
 from miniapp.views.Integral import getIntegralHistory
@@ -118,6 +118,7 @@ urlpatterns = [
 
     #     关联
     path('createAssociation/', createAssociation.as_view()),
+    path('cancelAssociation/', cancelAssociation.as_view()),
     path('searchUserForAssociation/', searchUserForAssociation.as_view()),
     path('getMyAssociation/', getMyAssociation.as_view()),
     path('Audit/', Audit.as_view()),

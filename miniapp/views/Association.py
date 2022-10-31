@@ -45,6 +45,30 @@ class createAssociation(APIView):
             return JsonResponse(res)
 
 
+class cancelAssociation(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        AssociationId = request.data.get('AssociationId')
+        As = Association.objects.filter(Q(id=AssociationId, userA=user) | Q(id=AssociationId, userB=user)).first()
+        if not As:
+            res['data'] = '邀请不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            As.delete()
+            res['data'] = '已取消关联'
+            res['status'] = 200
+            return JsonResponse(res)
+
+
 class Audit(APIView):
     authentication_classes = (authentication.JWTAuthentication,)
 
@@ -94,7 +118,9 @@ class searchUserForAssociation(APIView):
             res['status'] = 400
             return JsonResponse(res)
         mobile = request.data.get('mobile')
-        user2 = miniappUser.objects.filter(Q(mobile=mobile, is_active=True) & ~Q(id=userId)).first()
+        # user2 = miniappUser.objects.filter(Q(mobile=mobile, is_active=True) & ~Q(id=userId)).first()
+        user2 = miniappUser.objects.filter(
+            Q(Q(mobile=mobile) | Q(username=mobile)) & ~Q(id=userId) & Q(is_active=True)).first()
         if not user2:
             res['data'] = '无用户'
             res['status'] = 400
