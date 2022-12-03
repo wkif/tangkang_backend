@@ -114,18 +114,56 @@ class getNewsDetail(APIView):
     def post(self, request):
         res = {}
         newsId = request.data.get('newsId')
+        print(newsId)
         new = news.objects.filter(id=newsId, is_delete=False).first()
         if not new:
             res['data'] = '数据不存在'
             res['status'] = 400
             return JsonResponse(res)
         else:
+            new.Number_of_view += 1
+            new.save()
             res['data'] = {
                 'news': newsserializer(new).data,
             }
             res['status'] = 200
             return JsonResponse(res)
 
+class addViewOfNews(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        newsId = request.data.get('newsId')
+        new = news.objects.filter(id=newsId, is_delete=False).first()
+        if not new:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            new.Number_of_view+=1
+            new.save()
+            res['data'] = '成功'
+            res['status'] = 200
+            return JsonResponse(res)
+
+class addShareOfNews(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        newsId = request.data.get('newsId')
+        new = news.objects.filter(id=newsId, is_delete=False).first()
+        if not new:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            new.Number_of_share+=1
+            new.save()
+            res['data'] = '成功'
+            res['status'] = 200
+            return JsonResponse(res)
 
 class getCommitOfNews(APIView):
     authentication_classes = (authentication.JWTAuthentication,)

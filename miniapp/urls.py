@@ -30,7 +30,7 @@ from miniapp.views.Base_View import getUserAgreement, getTabList, changespeed, g
 from miniapp.views.Food_Database import getfoodDatabase, getDietRecords, getfoodDatabaseByname, deleteDietRecords, \
     addDietRecords
 from miniapp.views.News import getNewsList, getCommitOfNews, addCommit, getNewsDetail, deleteCommit, getTopNews, \
-    searchNews, getHotSearch, getStatusOfLike, LikeOfNews
+    searchNews, getHotSearch, getStatusOfLike, LikeOfNews, addShareOfNews, addViewOfNews
 from miniapp.views.Periodical_Logging_Data import getperiodicalLoggingDataByUserId, deletePeriodicalLoggingData, \
     addPeriodicalLoggingData
 from miniapp.views.Shops import getShopList, getMyOrderList, cancelOrder, addOrder, getTopGoods, getGoodDetail, payment, \
@@ -102,6 +102,8 @@ urlpatterns = [
     path('getHotSearch/', getHotSearch.as_view()),
     path('getStatusOfLike/', getStatusOfLike.as_view()),
     path('LikeOfNews/', LikeOfNews.as_view()),
+    path('addShareOfNews/', addShareOfNews.as_view()),
+    path('addViewOfNews/', addViewOfNews.as_view()),
     #     运动记录
     path('addSportsRecords/', addSportsRecords.as_view()),
     path('getSportsRecordsByid/', getSportsRecordsByid.as_view()),

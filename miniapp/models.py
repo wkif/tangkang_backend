@@ -351,6 +351,8 @@ class news(models.Model):
     top = models.BooleanField(u'是否置顶', default=False)
     cover = models.CharField(null=True, blank=True, verbose_name='封面', max_length=200)
     Number_of_likes = models.IntegerField(u'点赞数', default=0)
+    Number_of_view = models.IntegerField(u'浏览', default=0)
+    Number_of_share = models.IntegerField(u'转发', default=0)
     videoUrl = models.CharField(null=True, blank=True, verbose_name='视频', max_length=200)
 
     class Meta:
