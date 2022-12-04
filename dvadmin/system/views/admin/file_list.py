@@ -20,13 +20,12 @@ class FileSerializer(CustomModelSerializer):
         # print(self.initial_data)
         validated_data['name'] = str(self.initial_data.get('file'))
         # validated_data['url'] = self.initial_data.get('file')
-        validated_data['url'] = upload_file(self.request.FILES.get('file'),
+        img_url = upload_file(self.request.FILES.get('file'),
                                            str(self.initial_data.get('file')))
-        # print(validated_data)
+        if not img_url:
+            return
+        validated_data['url'] = img_url
         return super().create(validated_data)
-
-    def destroy(self, validated_data):
-        print(self.initial_data,'destroy')
 
 
 class FileViewSet(CustomModelViewSet):

@@ -22,6 +22,7 @@ def upload_file(data, file_name):
     else:
         QN_BASE_DIR = QN_BASE_DIR_img
     ret, info = put_data(token, file_name, data)
+    print("文件上传：",info,ret)
     img_url = QN_BASE_DIR + ret.get('key')
     return img_url
 

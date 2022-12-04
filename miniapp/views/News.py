@@ -19,6 +19,7 @@ class getNewsList(APIView):
     def get(self, request):
         res = {}
         newsList = news.objects.filter(is_delete=False).order_by('-updateTime')
+
         if not newsList:
             res['data'] = '数据不存在'
             res['status'] = 400
@@ -27,6 +28,12 @@ class getNewsList(APIView):
             for a in newsList:
                 a.content = re.sub('<[^<]+?>', '', a.content).replace('\n', '').strip()
             data = newsserializer(newsList, many=True).data
+            for i in range(1, len(data)):
+                for j in range(0, len(data) - i):
+                    a = data[j]['Number_of_likes']*10+data[j]['Number_of_share']*100+data[j]['Number_of_view']
+                    b = data[j+1]['Number_of_likes'] * 10 + data[j+1]['Number_of_share'] * 100 + data[j+1]['Number_of_view']
+                    if a < b:
+                        data[j], data[j + 1] = data[j + 1], data[j]
             res['data'] = data
             res['status'] = 200
             return JsonResponse(res)

@@ -19,6 +19,7 @@ class loginApi(APIView):
         user_data = get_login_info(code)
         info = request.data.get('info')
         inviteCode = request.data.get('inviteCode')
+        print('inviteCode',inviteCode)
         if user_data:
             u = miniappUser.objects.filter(openid=user_data['openid']).first()
             if not u:
@@ -34,11 +35,12 @@ class loginApi(APIView):
                     u1 = miniappUser.objects.filter(inviteCode=inviteCode, is_active=True).first()
                     if u1:
                         u1.numberofPersonsInvited += 1
+                        u1.save()
                         tarObj = IntegralDetail.objects.filter(name='邀请用户').first()
                         if tarObj:
                             u1.integral += tarObj.integral
-                            u1.save()
                             addIntegralHistory(u1, tarObj)
+                            u1.save()
                         else:
                             res['data'] = '联系客服设置积分值'
                             res['status'] = 400
