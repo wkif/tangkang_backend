@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework_simplejwt import authentication
 
-from shop.models import goodsCategory, Brand, SKUCommits
+from miniapp.models import miniappUser
+from shop.models import goodsCategory, Brand, SKUCommits, SKU
 from shop.utils.upload_file import upload_file
 
 
@@ -102,3 +103,4 @@ class deleteCommitById(APIView):
             'msg': 'ok',
         }
         return JsonResponse(res)
+

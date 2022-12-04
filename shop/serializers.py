@@ -12,17 +12,18 @@ from shop.models import *
 class SKUModelserializers(CustomModelSerializer):
     comments = serializers.SerializerMethodField()
 
-    # brand = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
 
     #
     def get_comments(self, obj):
         data = obj.skucommits_set.all().filter(is_delete=False).order_by('-add_time')
+        print(data)
         return SKUCommitsModelserializers(data, many=True).data
         # return obj.category.name
 
-    #
-    # def get_brand(self, obj):
-    #     return obj.brand.name
+
+    def get_brand(self, obj):
+        return obj.brand.name
 
     class Meta:
         model = SKU

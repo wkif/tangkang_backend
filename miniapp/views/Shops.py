@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 
 from rest_framework.views import APIView
@@ -6,8 +5,9 @@ from rest_framework_simplejwt import authentication
 
 from miniapp.models import *
 
-from shop.models import SKU, OrderInfo, goodsCategory
+from shop.models import SKU, OrderInfo, goodsCategory, SKUCommits
 from shop.serializers import SKUModelserializers, OrderInfoModelserializers
+
 
 # 商店
 class getShopList(APIView):
@@ -64,7 +64,7 @@ class getGoodDetail(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId,is_active=True).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -111,7 +111,7 @@ class addOrder(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId,is_active=True).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -123,7 +123,7 @@ class addOrder(APIView):
             res['status'] = 400
             return JsonResponse(res)
         goodId = request.data.get('goodId')
-        good = SKU.objects.filter(id=goodId,status=1).first()
+        good = SKU.objects.filter(id=goodId, status=1).first()
         if not good:
             res['data'] = '商品不存在'
             res['status'] = 400
@@ -149,7 +149,7 @@ class payment(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId,is_active=True).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -196,7 +196,7 @@ class cancelOrder(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId,is_active=True).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -267,6 +267,30 @@ class getMyOrderList(APIView):
             return JsonResponse(res)
 
 
+class getOrderById(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        orderId = request.data.get('orderId')
+        order = OrderInfo.objects.filter(id=orderId, order_status=4).first()
+        if not order:
+            res['data'] = '订单'
+            res['status'] = 400
+            return JsonResponse(res)
+        res['data'] = OrderInfoModelserializers(order).data
+        res['status'] = 200
+        return JsonResponse(res)
+
+
 class confirmOrder(APIView):
     authentication_classes = (authentication.JWTAuthentication,)
 
@@ -275,7 +299,7 @@ class confirmOrder(APIView):
     def post(self, request):
         res = {}
         userId = request.data.get('userId')
-        user = miniappUser.objects.filter(id=userId,is_active=True).first()
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
         if not user:
             res['data'] = '用户不存在'
             res['status'] = 400
@@ -298,3 +322,37 @@ class confirmOrder(APIView):
             res['status'] = 400
             return JsonResponse(res)
 
+
+class addCommitById(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    def post(self, request):
+        res = {}
+        userId = request.data.get('userId')
+        orderId = request.data.get('orderId')
+        skuId = request.data.get('skuId')
+        content = request.data.get('content')
+        score = request.data.get('score')
+        goods = SKU.objects.filter(id=skuId, status=1).first()
+        if not goods:
+            res['data'] = '商品不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        user = miniappUser.objects.filter(id=userId, is_active=True).first()
+        if not user:
+            res['data'] = '用户不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        order = OrderInfo.objects.filter(id=orderId, order_status=4).first()
+        if not order:
+            res['data'] = '订单不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        com = SKUCommits.objects.create(sku=goods, user=user, content=content, score=score)
+        order.order_status = 5
+        order.save()
+        res = {
+            'status': 200,
+            'msg': 'ok',
+        }
+        return JsonResponse(res)

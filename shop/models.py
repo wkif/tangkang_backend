@@ -50,7 +50,7 @@ class SKU(models.Model):
     name = models.CharField(max_length=50, verbose_name='名称')
     caption = models.CharField(max_length=100, verbose_name='副标题')
     category = models.ForeignKey(goodsCategory, on_delete=models.CASCADE, verbose_name='商品类别')
-    brand = models.ForeignKey('brand', on_delete=models.CASCADE, verbose_name='品牌')
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, verbose_name='品牌')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='单价')
     # desc = models.CharField(max_length=200, verbose_name='描述')
     detail = models.TextField(verbose_name='详情')
