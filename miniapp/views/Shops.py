@@ -102,6 +102,28 @@ class getGoodById(APIView):
             res['status'] = 200
             return JsonResponse(res)
 
+class searchGoods(APIView):
+    authentication_classes = (authentication.JWTAuthentication,)
+
+    # authentication_classes = ()
+
+    def post(self, request):
+        res = {}
+        goodName = request.data.get('goodName')
+        if not goodName:
+            res['data'] = '数据不存在'
+            res['status'] = 400
+            return JsonResponse(res)
+        goods = SKU.objects.filter(name__icontains=goodName, status=1).all()
+
+        if not goods:
+            res['data'] = '无数据'
+            res['status'] = 400
+            return JsonResponse(res)
+        else:
+            res['data'] = SKUModelserializers(goods, many=True).data
+            res['status'] = 200
+            return JsonResponse(res)
 
 class addOrder(APIView):
     authentication_classes = (authentication.JWTAuthentication,)

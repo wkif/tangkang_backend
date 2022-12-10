@@ -34,7 +34,7 @@ from miniapp.views.News import getNewsList, getCommitOfNews, addCommit, getNewsD
 from miniapp.views.Periodical_Logging_Data import getperiodicalLoggingDataByUserId, deletePeriodicalLoggingData, \
     addPeriodicalLoggingData
 from miniapp.views.Shops import getShopList, getMyOrderList, cancelOrder, addOrder, getTopGoods, getGoodDetail, payment, \
-    confirmOrder, addCommitById, getOrderById
+    confirmOrder, addCommitById, getOrderById, searchGoods
 
 from miniapp.views.User import loginApi, getAddressByUsrid, addAddressByUserid, deleteAddressByUserid, editAddress, \
     editUserInfo, getUserInfoByUserId, realnameAuthentication, getUserIntegral
@@ -91,6 +91,7 @@ urlpatterns = [
     path('confirmOrder/', confirmOrder.as_view()),
     path('addCommitById/', addCommitById.as_view()),
     path('getOrderById/', getOrderById.as_view()),
+    path('searchGoods/', searchGoods.as_view()),
 
     #     资讯
     path('getNewsList/', getNewsList.as_view()),

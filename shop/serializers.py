@@ -12,7 +12,7 @@ from shop.models import *
 class SKUModelserializers(CustomModelSerializer):
     comments = serializers.SerializerMethodField()
 
-    brand = serializers.SerializerMethodField()
+    # brand = serializers.SerializerMethodField()
 
     #
     def get_comments(self, obj):
@@ -22,8 +22,8 @@ class SKUModelserializers(CustomModelSerializer):
         # return obj.category.name
 
 
-    def get_brand(self, obj):
-        return obj.brand.name
+    # def get_brand(self, obj):
+    #     return obj.brand.name
 
     class Meta:
         model = SKU
